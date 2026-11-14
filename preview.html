@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DeepSeek 大肥鱼 · 动作预览</title>
+<style>
+:root{color-scheme:light;font-family:system-ui,"Microsoft YaHei",sans-serif;color:#273d68;background:#f4f8ff}*{box-sizing:border-box}body{margin:0}main{max-width:1050px;margin:auto;padding:34px 22px}header{display:flex;justify-content:space-between;align-items:center;gap:20px}h1{font-size:clamp(24px,4vw,38px);margin:0 0 8px}p{line-height:1.8;color:#60789b}a{color:#326bb7}header a{background:#386eb2;color:white;padding:12px 18px;border-radius:100px;text-decoration:none;white-space:nowrap}.layout{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:26px}.stage{min-height:440px;display:flex;align-items:center;justify-content:center;background:white;border:1px solid #dce7f6;border-radius:24px;position:relative;overflow:hidden}.sprite{width:192px;height:208px;background-image:url('assets/spritesheet.png');background-repeat:no-repeat;transform:scale(1.7);transform-origin:center}.badge{position:absolute;top:18px;left:20px;color:#6683ad;font-size:14px}.controls{background:#eaf1fb;border-radius:24px;padding:24px}h2{font-size:20px;margin:0 0 14px}.buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}button{border:1px solid #cbdcf1;border-radius:12px;background:white;color:#354f79;padding:12px 5px;font:inherit;cursor:pointer}button:hover{border-color:#548bd0}button[aria-pressed=true]{background:#386eb2;color:white;border-color:#386eb2}.row{display:flex;gap:12px;align-items:center;margin-top:18px}select{font:inherit;padding:10px;border:1px solid #bcd2ee;border-radius:10px;background:white;color:#273d68;flex:1}small{display:block;color:#6882a5;line-height:1.8;margin-top:18px}video{width:100%;border-radius:20px;background:white;margin:12px 0}.downloads{display:flex;flex-wrap:wrap;gap:18px}footer{border-top:1px solid #dce7f6;margin-top:32px;padding-top:16px;color:#7186a4;font-size:13px}@media(max-width:720px){main{padding:24px 16px}header{align-items:start;flex-direction:column}.layout{grid-template-columns:1fr}.stage{min-height:350px}.sprite{transform:scale(1.4)}}
+</style>
+<main>
+<header><div><h1>DeepSeek 大肥鱼</h1><p>陪你开工，也陪你好好吃饭。</p></div><a href="https://chatgpt.com/s/sharepet_6af8b683c4808191aebfabfcd5d52a30">领养这只宠物 ↗</a></header>
+<div class="layout"><section class="stage" aria-label="宠物动作舞台"><span class="badge" id="status">眨眼呼吸 · 6 帧</span><div class="sprite" id="pet" role="img" aria-label="蓝色鲸鱼女仆小伙伴"></div></section>
+<section class="controls"><h2>选一个小动作</h2><div class="buttons" id="actions"></div><div class="row"><button id="pause" aria-pressed="false">暂停</button><label for="gaze">看看哪里</label><select id="gaze"><option value="">请选择方向</option></select></div><small>这里按图集关键帧预览。应用内播放由 Pets 决定；下方视频另有补帧演出。</small></section></div>
+<h2 style="margin-top:32px">2 分 20 秒 · 陪伴日常</h2><video controls preload="metadata" poster="previews/poster.jpg" src="media/showcase.mp4"></video>
+<div class="downloads"><a href="assets/spritesheet.png" download>下载透明动作图集</a><a href="pet.json" download>下载动作配置</a><a href="media/showcase.mp4" download>下载展示视频</a></div>
+<footer>非官方同人创作 · AI 生成角色图像 · 展示视频不是应用录屏。完整格式与使用说明见 README。</footer>
+</main>
+<script>
+const states=[['眨眼呼吸',0,[280,110,110,140,140,320]],['向右小跑',1,[120,120,120,120,120,120,120,220]],['向左小跑',2,[120,120,120,120,120,120,120,220]],['挥挥手',3,[140,140,140,280]],['开心跳跃',4,[140,140,140,140,280]],['委屈振作',5,[140,140,140,140,140,140,140,240]],['抱小鲸鱼',6,[150,150,150,150,150,260]],['电脑开工',7,[120,120,120,120,120,220]],['吃白米饭',8,[150,150,150,150,150,280]]];
+const pet=document.querySelector('#pet'),status=document.querySelector('#status'),actions=document.querySelector('#actions'),gaze=document.querySelector('#gaze'),pause=document.querySelector('#pause');
+let selected=0,index=0,timer=null,paused=false,direction=null;
+function paint(row,col){pet.style.backgroundPosition=`${-col*192}px ${-row*208}px`;}
+function tick(){clearTimeout(timer);if(direction!==null){paint(9+Math.floor(direction/8),direction%8);return;}const s=states[selected];paint(s[1],index);if(!paused)timer=setTimeout(()=>{index=(index+1)%s[2].length;tick();},s[2][index]);}
+function choose(i){selected=i;index=0;direction=null;gaze.value='';status.textContent=`${states[i][0]} · ${states[i][2].length} 帧`;[...actions.children].forEach((b,j)=>b.setAttribute('aria-pressed',String(i===j)));tick();}
+states.forEach((s,i)=>{const b=document.createElement('button');b.textContent=s[0];b.onclick=()=>choose(i);b.setAttribute('aria-pressed',String(i===0));actions.append(b);});
+const directions=['上','右上偏上','右上','右上偏右','右','右下偏右','右下','右下偏下','下','左下偏下','左下','左下偏左','左','左上偏左','左上','左上偏上'];
+directions.forEach((s,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${s} · ${i*22.5}°`;gaze.append(o);});
+gaze.onchange=()=>{if(gaze.value===''){choose(selected);return;}direction=Number(gaze.value);status.textContent=`视线：${directions[direction]}`;tick();};pause.onclick=()=>{paused=!paused;pause.textContent=paused?'继续':'暂停';pause.setAttribute('aria-pressed',String(paused));tick();};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)clearTimeout(timer);else tick();});tick();
+</script>
+</html>
