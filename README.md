@@ -1,58 +1,48 @@
-# AI Work Pet · AI 桌宠资源
+# AI Work Pet · AI 桌宠
 
-这个公开仓库用于分享 AI 主题桌宠，后续可以继续加入其他角色。目前包含 **DeepSeek 大肥鱼** 的 Pets 资源包、高清互动网页和展示视频。
+DeepSeek 大肥鱼的分层互动桌宠。后续可以继续加入其他 AI 角色。
 
-一只蓝色鲸鱼主题的 Q 版女仆小伙伴：会眨眼、挥手、小跑、跳跃，也会打开小电脑工作、捧着白米饭吃饭、抱小鲸鱼蹭脸。
+[打开互动网页](https://ai-comic-hhxk233.pages.dev/pet/) · [完整分层工程下载](https://ai-comic-hhxk233.pages.dev/pet/downloads/deepseek-live2d-source.zip) · [2 分 20 秒展示视频](https://ai-comic-hhxk233.pages.dev/pet/media/showcase.mp4)
 
-![动作预览](previews/all-states.gif)
+![分层模型预览](previews/rig-preview.jpg)
 
-## 直接领养
+## 这一版做了什么
 
-[在 ChatGPT 中领养大肥鱼](https://chatgpt.com/s/sharepet_6af8b683c4808191aebfabfcd5d52a30)
+v03 使用同一套分层脸、身体、四肢和道具实时驱动，替换了旧版神经补帧动画。包含呼吸眨眼、平滑起步与收步、挥手、思考、跳跃、伸懒腰、电脑开合与打字、端碗吃白米饭、抱小鲸鱼和委屈互动。吃饭时勺子会在嘴边变空，再回碗里舀饭。
 
-分享链接提供当前发布版本的宠物快照。需要支持 Pets 的 ChatGPT 环境。
+打开网页后会自行走动，过一会儿随机做动作。点击回应，拖动换位置，右键或手机长按选择动作。漫画网站首页也有同一只悬浮桌宠，可以收起并记住状态。
 
-## 下载与预览
+浏览器每个显示帧都会计算姿势；实际帧率取决于设备和浏览器。展示视频是从真实网页模型运行时按 1/60 秒逐帧采集的 1280×720、60fps、140 秒视频，没有 AI 补帧，也不是桌面屏幕录制。
 
-- 完整动作图集：[`assets/spritesheet.png`](assets/spritesheet.png)
-- 动作与方向配置：[`pet.json`](pet.json)
-- 2 分 20 秒展示视频：[`media/showcase.mp4`](media/showcase.mp4)
-- [打开高清互动桌宠](https://ai-comic-hhxk233.pages.dev/pet/)：自动闲逛、点击回应、拖动换位置，右键或手机长按指定动作。
-- [漫画网站首页](https://ai-comic-hhxk233.pages.dev/)也会显示悬浮桌宠；可以收起，之后用“大肥鱼”按钮展开。
-- 下载仓库后，直接用浏览器打开 [`index.html`](index.html) 即可互动；不需要安装依赖。原始九种动作和十六个视线方向可在 [`preview.html`](preview.html) 检查。
+## 本地运行
 
-也可以把图集交给支持 Pets 的助手，并说明：“请将这个 v2 图集导入为我的宠物，不要重新绘制。”助手应先校验图集，再执行导入。
+下载仓库，在仓库目录运行 `python -m http.server 8000`，再打开 `http://localhost:8000/`。网页需要通过 HTTP 加载模型和 WebAssembly，不能直接双击 HTML。无需安装前端依赖。
 
-## 包含哪些动作
+## 文件
 
-| 状态 | 动作 | 关键帧 |
-| --- | --- | ---: |
-| idle | 呼吸、眨眼 | 6 |
-| running-right | 向右小跑 | 8 |
-| running-left | 向左小跑 | 8 |
-| waving | 挥手 | 4 |
-| jumping | 蹲下、起跳、落地 | 5 |
-| failed | 委屈、振作 | 8 |
-| waiting | 抱小鲸鱼、蹭脸 | 6 |
-| running | 扶着小电脑打字 | 6 |
-| review | 捧碗、舀白饭、吃饭 | 6 |
+| 文件 | 用途 |
+| --- | --- |
+| `index.html`、`pet.js`、`motion.js`、`pet.css` | 网页互动和连续动作控制 |
+| `widget.js` | 在其他网页嵌入悬浮桌宠 |
+| `model/model.p2lrt` | 网页分层模型 |
+| `model/cubism/` | 真正的 `.moc3`、模型配置和纹理 |
+| `source/DeepSeek.psd2live` | 完整可编辑的分层绑定工程 |
+| `source/layers/`、`rig/parts/` | 分层原画及相同身份的道具 |
+| `downloads/deepseek-live2d-source.zip` | 模型、工程和可运行网页代码打包 |
+| `media/showcase.mp4` | 本版 2 分 20 秒展示 |
 
-另外包含按顺时针排列的十六个视线方向，从正上方开始，每步 22.5°。
+两种运行格式共用这套角色设计。网页使用 PSD2Live 的开放运行格式；另外提供的 `.moc3` 已在官方 Cubism Native Core 加载并渲染测试。完整可编辑源文件采用 PSD2Live 格式；当前 `.cmo3` 导出存在源重建缺失，因此不把它冒充完整 Cubism Editor 工程。
 
-## 文件格式与效果说明
+电脑、饭碗和勺子由网页应用层驱动。单独在其他 Live2D 宿主打开 `.moc3`，需要额外绑定道具和动作。这个仓库尚未提供独立运行的 Windows 桌宠程序。
 
-图集为透明 PNG，1536 × 2288 像素，8 列 × 11 行，单格 192 × 208 像素。前九行为状态动作，后两行为十六个视线方向；未使用的格子保持透明。
+## 旧版 Pets 图集
 
-这是完整的 **Pets 动作资源包及网页互动版本**，不包含独立运行的 Windows 桌宠程序，也不是 Live2D 的 `.moc3` 或分层建模工程。
+`assets/spritesheet.png`、`pet.json` 与 `preview.html` 保留旧版 ChatGPT Pets 快照兼容。其动作已被本版分层动画取代，不代表本版网页效果；Pets 宿主的图集播放方式也不能直接运行此网页模型。
 
-Pets 的状态帧数及播放节奏由宿主决定。网页及展示视频使用高清生成画面的神经补帧，以 60 fps 播放，包含开电脑、端饭碗和伸懒腰等较长演出。网页按需加载透明 WebP 分片，手机最多缓存两个分片。视频不是应用录屏，补帧效果不代表 Pets 原生播放帧率。
+## 来源与许可
 
-## 制作与检查
+角色由 AI 参考用户提供的设计生成，是非官方同人创作，与 DeepSeek 官方没有隶属关系。未公开用户原始参考图、私人工作区、账号资料或临时上传地址。
 
-角色图像由 AI 参考用户提供的设计图生成，保留蓝色渐变长发、鲸鱼尾巴、女仆头饰和围裙等特征。本项目是非官方同人创作，与 DeepSeek 官方没有隶属关系。
+第三方网页播放器与 WebAssembly 运行库遵循各自 MIT 许可，原始许可保留在 `model/`。未打包第三方编辑器、Cubism Core 或原生桥接程序。美术作品暂未另行指定使用许可证。
 
-已通过本次 Pets 图集结构校验、逐帧连接检查、跳跃位移检查及十六方向检查。早期拿道具片段已重做；神经补帧仍可能带来轻微手部细节柔化，演出剪辑间存在细小比例和道具图案变化。
-
-仓库只包含分享所需的图集、预览、视频、配置和预览页。原始参考图、私人工作区、账号信息及临时上传地址不包含在内。
-
-文件校验值见 [`SHA256SUMS.txt`](SHA256SUMS.txt)。本仓库暂未指定额外的作品使用许可证。
+文件校验值见 `SHA256SUMS.txt`。
