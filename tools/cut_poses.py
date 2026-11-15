@@ -4,7 +4,7 @@ import sys, os, json
 import numpy as np, cv2
 from PIL import Image
 src, out = sys.argv[1], sys.argv[2]; os.makedirs(out, exist_ok=True)
-SHEETS = {'rice': ('rice-keyposes.png', 4, 1), 'laptop': ('laptop-keyposes.png', 4, 1), 'tr': ('thinking-running-keyposes.png', 3, 2)}
+SHEETS = {'rice': ('rice-keyposes.png', 4, 1), 'typing': ('laptop-keyposes.png', 4, 1), 'tr': ('thinking-running-keyposes.png', 3, 2)}
 meta = {}
 for key, (fn, nx, ny) in SHEETS.items():
     im = np.array(Image.open(os.path.join(src, fn)).convert('RGB')); H, W = im.shape[:2]; cw, ch = W // nx, H // ny

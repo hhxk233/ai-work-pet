@@ -1,8 +1,9 @@
-"""Pull the older pose sprites (rice*, laptop*, cut from the v04 key-pose sheets) onto the palette of the
-idle model, so a switch between the model and those sprites does not change the hair colour.
+"""Pull the one remaining set of older pose sprites (typing*, cut from the v04 laptop key-pose sheet) onto the
+palette of the idle model, so a switch between the model and those sprites does not change the hair colour.
 
-Measured on the crown of the hair (cv2 Lab, 0-255): the idle model sits at L 120, b 99.7; the rice sheet at
-L 142, b 101.9; the laptop sheet at L 129, b 100.9. Skin and whites already agree, so only blue pixels move.
+Measured on the crown of the hair (cv2 Lab, 0-255): the idle model sits at L 120, b 99.7; the v04 laptop sheet
+at L 129, b 100.9. Skin and whites already agree, so only blue pixels move. Sprites cut from the green sheets
+are drawn against the approved figure and need no correction.
 
 usage: match_colour.py <poses dir>      (run once, after cut_poses.py / upscale.py; not idempotent)
 """
@@ -10,7 +11,7 @@ import sys, os
 import numpy as np, cv2
 from PIL import Image
 
-SHIFT = {'rice': (-20.0, -2.0), 'laptop': (-8.5, -1.2)}    # (dL, db) for blue pixels
+SHIFT = {'typing': (-8.5, -1.2)}    # (dL, db) for blue pixels
 d = sys.argv[1]
 for f in sorted(os.listdir(d)):
     key = next((k for k in SHIFT if f.startswith(k) and f.endswith('.png')), None)

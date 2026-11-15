@@ -25,11 +25,11 @@
 <div id="floor"></div><div id="shadow"></div>
 <canvas id="pet"></canvas>
 <nav aria-label="动作">
-  <button data-act="rice">吃白米饭</button><button data-act="laptop">电脑开工</button><button data-act="think">思考</button><button data-act="wave">挥手</button><button data-act="stretch">伸懒腰</button><button data-act="whale">抱鲸鱼</button><button data-act="rest">休息</button><button data-act="jump">跳</button>
+  <button data-act="rice">吃白米饭</button><button data-act="laptop">电脑开工</button><button data-act="typing">敲键盘</button><button data-act="think">思考</button><button data-act="wave">挥手</button><button data-act="stretch">伸懒腰</button><button data-act="whale">抱鲸鱼</button><button data-act="rest">休息</button><button data-act="jump">跳</button>
   <button data-act="walkL">← 走</button><button data-act="walkR">走 →</button>
   <button id="auto" aria-pressed="true">自动闲逛</button>
 </nav>
-<div id="menu" role="menu"><button data-act="rice">吃白米饭</button><button data-act="laptop">电脑开工</button><button data-act="think">思考</button><button data-act="wave">挥手</button><button data-act="stretch">伸懒腰</button><button data-act="whale">抱鲸鱼</button><button data-act="rest">休息</button><button data-act="jump">跳一下</button><button data-act="walkL">向左走走</button><button data-act="walkR">向右走走</button><button data-act="halt">停下</button></div>
+<div id="menu" role="menu"><button data-act="rice">吃白米饭</button><button data-act="laptop">电脑开工</button><button data-act="typing">敲键盘</button><button data-act="think">思考</button><button data-act="wave">挥手</button><button data-act="stretch">伸懒腰</button><button data-act="whale">抱鲸鱼</button><button data-act="rest">休息</button><button data-act="jump">跳一下</button><button data-act="walkL">向左走走</button><button data-act="walkR">向右走走</button><button data-act="halt">停下</button></div>
 <script src="engine/pet-engine.js"></script>
 <script src="characters/deepseek/rig.js"></script>
 <script src="characters/deepseek/motions.js"></script>
@@ -65,7 +65,7 @@
       if (walkLeft > 0) { walkLeft -= dt; if (walkLeft <= 0) director.halt(); }
       else if (!director.busy && director.walkW === 0) { idleFor += dt; if (idleFor > nextAt) { idleFor = 0; nextAt = 3 + Math.random() * 5; const r = Math.random();
         if (r < 0.55) { const mid = x + cssW / 2; const dir = mid < innerWidth * 0.25 ? 1 : mid > innerWidth * 0.75 ? -1 : (Math.random() < 0.5 ? -1 : 1); director.walk(dir); walkLeft = 1.6 + Math.random() * 2.4; }
-        else { const pool = ['think', 'wave', 'stretch', 'jump', 'rice', 'laptop', 'whale', 'rest']; director.play(pool[Math.floor(Math.random() * pool.length)]); } } }
+        else { const pool = ['think', 'wave', 'stretch', 'jump', 'rice', 'laptop', 'typing', 'whale', 'rest']; director.play(pool[Math.floor(Math.random() * pool.length)]); } } }
     } else if (walkLeft > 0) { walkLeft -= dt; if (walkLeft <= 0) director.halt(); }
     director.update(pet, dt);
     if (drag) { pet.P.lean += Math.max(-14, Math.min(14, drag.v * 1.4)); drag.v *= 0.8; }   // dragging tugs the body; hair and tail follow through

@@ -5,13 +5,30 @@ bow outline, had a brown outline on one side only and a hard cut on the other. O
 tilts, that edge is exposed above the collar. This rebuilds the edge as one smooth curve with a single
 continuous outline, as in the approved front view.
 
-usage: fix_chin.py <tex dir>      (rewrites head.png in place; run once on the output of prep_layers.py)
+The torso layer comes from the approved front view with the head masked out, and on the viewer's left the
+mask stopped just short of the chin outline, so a short brown stroke was left lying on the collar frill. It
+stays with the body when the head moves and reads as a stray line under the chin. It is recoloured to the
+navy of the frill outlines so it becomes the top edge of the frill.
+
+usage: fix_chin.py <tex dir> [head|body]   (rewrites head.png and/or body.png in place; run once on the
+       output of prep_layers.py; default both)
 """
 import sys, json, os
 import numpy as np
 from PIL import Image
 
-tex = sys.argv[1]
+tex = sys.argv[1]; which = sys.argv[2] if len(sys.argv) > 2 else 'both'
+if which in ('body', 'both'):
+    mb = json.load(open(os.path.join(tex, 'manifest.json')))['body']
+    bim = np.asarray(Image.open(os.path.join(tex, 'body.png')).convert('RGBA')).astype(np.float64)
+    n = 0
+    for (xa, xb) in ((394, 454), (526, 538)):                       # the two leftover stretches; the bow gem between them is gold and must stay
+        reg = bim[0:574 - mb['y'], xa - mb['x']:xb - mb['x']]
+        lum = reg[..., :3].mean(-1); brown = (reg[..., 3] > 0) & (reg[..., 0] - reg[..., 2] > -4) & (lum < 150)
+        reg[brown, 0] = lum[brown] * 0.80; reg[brown, 1] = lum[brown] * 0.86; reg[brown, 2] = lum[brown] * 1.34; n += int(brown.sum())
+    Image.fromarray(np.clip(bim, 0, 255).round().astype(np.uint8)).save(os.path.join(tex, 'body.png'))
+    print('torso: recoloured', n, 'pixels of leftover chin outline')
+if which == 'body': sys.exit()
 man = json.load(open(os.path.join(tex, 'manifest.json')))['head']
 OX, OY = man['x'], man['y']
 im = np.asarray(Image.open(os.path.join(tex, 'head.png')).convert('RGBA')).astype(np.float64)

@@ -29,20 +29,26 @@ html,body{margin:0;background:#eef3fa;font-family:"Noto Sans CJK SC","PingFang S
 (async()=>{ const c=document.getElementById('c'), sh=document.getElementById('sh'), $=id=>document.getElementById(id);
   const {pet,director}=await loadDeepSeek(c); const S=560/900; let x=+(new URLSearchParams(location.search).get('x')||600), T=0;
   // caption track: [start, end, number, title, subtitle]
-  const CAPS=[[4.3,11.6,'01','待机','呼吸、眨眼、张望，头发尾巴跟着动'],[12.2,19.8,'02','自己走走','起步、迈步、停下，头发甩一下再落回'],
-    [20.4,33.6,'03','吃白米饭','端碗，舀一勺，送到嘴边，慢慢嚼'],[34.3,47.2,'04','电脑开工','坐下，掀开电脑，打字，做完再合上'],
-    [47.9,55.0,'05','想一想','拳头抵着下巴想一会儿，想到了跳一下'],[55.4,59.9,'06','打招呼','小手举到脸旁边挥一挥'],
-    [60.2,65.3,'07','伸懒腰','双手举高，打个哈欠'],[65.8,68.6,'08','点她一下','先蹲，再跳起来'],
-    [68.9,80.0,'09','抱鲸鱼','抱着小鲸鱼晃一晃，再趴到大鲸鱼上'],[80.2,92.0,'10','休息','坐着打瞌睡，头一点一点，然后睡着']];
+  const CAPS=[[4.3,11.6,'01','待机','呼吸、眨眼、张望，头发尾巴跟着动'],
+    [12.2,19.8,'02','自己走走','起步、迈步、停下，头发甩一下再落回'],
+    [20.4,33.6,'03','吃白米饭','端碗，舀一勺，送到嘴边，慢慢嚼'],
+    [34.3,47.2,'04','电脑开工','坐下，掀开电脑，埋头打字，做完抬头笑一下'],
+    [47.9,60.2,'05','敲键盘','另一个角度：电脑斜着放，看得见键盘'],
+    [60.9,68.0,'06','想一想','拳头抵着下巴想一会儿，想到了跳一下'],
+    [68.4,72.9,'07','打招呼','小手举到脸旁边挥一挥'],
+    [73.2,78.3,'08','伸懒腰','双手举高，打个哈欠'],
+    [78.8,81.6,'09','点她一下','先蹲，再跳起来'],
+    [81.9,93.0,'10','抱鲸鱼','抱着小鲸鱼晃一晃，再趴到大鲸鱼上'],
+    [93.2,105.0,'11','休息','坐着打瞌睡，头一点一点，然后睡着']];
   const win=(a,b,t,f)=>Math.max(0,Math.min(1,(t-a)/f))*Math.max(0,Math.min(1,(b-t)/f)), ez=u=>u*u*(3-2*u);
   const place=()=>{ c.style.left=x+'px'; c.style.top=(612+26-(905+40)*S)+'px'; const k=1-pet.P.jump/90, w=190*k;
     sh.style.width=w+'px'; sh.style.left=(x+(500-60)*S-w/2)+'px'; sh.style.top=(612+26-13)+'px'; sh.style.opacity=k; };
   const captions=()=>{ const ta=ez(win(0.4,3.9,T,0.5)); $('title').style.opacity=ta; $('title').style.transform=`translateY(${(1-ta)*14}px)`;
-    const ea=ez(win(92.6,99.6,T,0.6)); $('end').style.opacity=ea; $('end').style.transform=`translateY(${(1-ea)*14}px)`;
+    const ea=ez(win(105.6,112.6,T,0.6)); $('end').style.opacity=ea; $('end').style.transform=`translateY(${(1-ea)*14}px)`;
     let a=0, cur=null; for(const k of CAPS){ const v=win(k[0],k[1],T,0.35); if(v>0){ a=ez(v); cur=k; } }
     const el=$('cap'); el.style.opacity=a; el.style.transform=`translateY(${(1-a)*12}px)`;
-    if(cur){ el.querySelector('.n').textContent=cur[2]+' / 10'; el.querySelector('h2').textContent=cur[3]; el.querySelector('p').textContent=cur[4]; }
-    $('brand').style.opacity=ez(win(0.2,99.8,T,0.6)); };
+    if(cur){ el.querySelector('.n').textContent=cur[2]+' / 11'; el.querySelector('h2').textContent=cur[3]; el.querySelector('p').textContent=cur[4]; }
+    $('brand').style.opacity=ez(win(0.2,112.8,T,0.6)); };
   window.cap={pet,director,step(dt){ T+=dt; director.update(pet,dt); pet.update(dt); x+=director.vx*S*dt; pet.draw(); place(); captions(); },
     cmd(s){ const [a,b]=s.split(':'); if(a==='walk')director.walk(+b); else if(a==='halt')director.halt(); else if(a==='play')director.play(b); } };
   for(let i=0;i<20;i++){ director.update(pet,1/30); pet.update(1/30); } pet.draw(); place(); captions(); window.ready=true; })().catch(e=>{window.err=String(e.stack||e)});

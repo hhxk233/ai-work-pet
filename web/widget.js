@@ -38,7 +38,7 @@
   <div class="menu" role="menu" hidden></div>
   <button class="fold" hidden aria-label="展开大肥鱼桌宠">大肥鱼</button>`;
   const $ = s => root.querySelector(s), canvas = $('canvas'), hit = $('.hit'), dock = $('.dock'), menu = $('.menu'), fold = $('.fold');
-  const ACTS = [['rice', '吃白米饭'], ['laptop', '电脑开工'], ['think', '想一想'], ['wave', '挥手'], ['stretch', '伸懒腰'], ['whale', '抱鲸鱼'], ['rest', '休息'], ['jump', '跳一下']];
+  const ACTS = [['rice', '吃白米饭'], ['laptop', '电脑开工'], ['typing', '敲键盘'], ['think', '想一想'], ['wave', '挥手'], ['stretch', '伸懒腰'], ['whale', '抱鲸鱼'], ['rest', '休息'], ['jump', '跳一下']];
   menu.innerHTML = ACTS.map(a => `<button role="menuitem" data-act="${a[0]}">${a[1]}</button>`).join('');
 
   const loadScript = n => new Promise((ok, no) => { const s = document.createElement('script'); s.src = new URL(n, base); s.onload = ok; s.onerror = no; document.head.append(s); });

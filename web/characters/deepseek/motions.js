@@ -29,10 +29,23 @@
         };
       },
     },
-    // 电脑：抱着合上的电脑 → 坐下放好 → 掀开 → 打字 → 合上 → 抱起 → 收起
+    // 电脑：抱着合上的电脑 → 坐下放好 → 掀开打字 → 做完抬头 → 合上 → 抱起 → 收起
     laptop: {
       dur: 12.4,
-      poses: [[0.25, 'laptop0'], [1.6, 'laptop1'], [2.5, 'laptop2'], [3.2, 'laptop3'], [9.2, 'laptop2'], [9.85, 'laptop1'], [10.7, 'laptop0'], [11.9, 'rig']],
+      poses: [[0.25, 'laptop0'], [1.6, 'laptop1'], [2.5, 'laptop2'], [7.3, 'laptop3'], [9.85, 'laptop1'], [10.7, 'laptop0'], [11.9, 'rig']],   // laptop2 = typing, eyes on the screen; laptop3 = done, looks up happy
+      fn(t) {
+        const type = win(2.9, 7.2, t, 0.3), burst = 0.5 + 0.5 * Math.sin(t * 1.7) > 0.25 ? 1 : 0.35;   // types in bursts, pauses to read
+        return {
+          bob: 5 * dips([0.25, 1.6, 10.7, 11.9], t) + 2.5 * dips([2.5, 7.3, 9.85], t) + type * burst * 0.9 * Math.sin(t * TAU * 6.5),
+          headZ: type * (1.4 * Math.sin(t * 0.9) + burst * 0.5 * Math.sin(t * TAU * 3.25)), headY: -0.08 * type, headX: -0.06 * type,
+          bodyZ: 0, tail: type * 7 * Math.sin(t * 1.4),
+        };
+      },
+    },
+    // 敲键盘（v04 那版电脑画稿，斜着看得到键盘）：抱着合上的电脑 → 坐下放好 → 掀开 → 打字 → 合上 → 抱起 → 收起
+    typing: {
+      dur: 12.4,
+      poses: [[0.25, 'typing0'], [1.6, 'typing1'], [2.5, 'typing2'], [3.2, 'typing3'], [9.2, 'typing2'], [9.85, 'typing1'], [10.7, 'typing0'], [11.9, 'rig']],
       fn(t) {
         const type = win(3.5, 9.1, t, 0.3), burst = 0.5 + 0.5 * Math.sin(t * 1.7) > 0.25 ? 1 : 0.35;   // types in bursts, pauses to read
         return {

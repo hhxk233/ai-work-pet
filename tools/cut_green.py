@@ -4,11 +4,16 @@ import sys, os, json
 import numpy as np, cv2
 from PIL import Image
 src, out = sys.argv[1], sys.argv[2]
-EAR, FEET_X, HEAD_X = 675.0, 495.0, 492.0
+EAR, FEET_X, HEAD_X = 675.0, 503.0, 500.0
+# Extra x offset per sprite, measured by matching the sprite's head against the idle model's head, so that a
+# switch between the model and a sprite (or between two sprites of one action) does not shift her sideways.
+NUDGE = {'think1': 4, 'laptop0': 3, 'laptop1': 15, 'laptop2': 12, 'laptop3': 15}
 # sheet -> (reference figure index for scale, [(name, kind), (name, kind)])
 SHEETS = {'think': (0, [('think0', 'stand'), ('think1', 'stand')]), 'wave': (1, [('wave0', 'stand'), ('wave1', 'stand')]),
           'stretch': (0, [('stretch0', 'stand'), ('stretch1', 'stand')]), 'whale': (0, [('whale0', 'stand'), ('whale1', 'lie')]),
-          'rest': (0, [('rest0', 'sit'), ('rest1', 'lie')]), 'jump': (0, [('jump0', 'stand'), ('jump1', 'stand')])}
+          'rest': (0, [('rest0', 'sit'), ('rest1', 'lie')]), 'jump': (0, [('jump0', 'stand'), ('jump1', 'stand')]),
+          'rice_a_v02': (0, [('rice0', 'stand'), ('rice1', 'stand')]), 'rice_b_v02': (0, [('rice2', 'stand'), ('rice3', 'stand')]),   # rice_a / rice_b (first try) were rejected
+          'laptop_a': (0, [('laptop0', 'stand'), ('laptop1', 'sit')]), 'laptop_b': (0, [('laptop2', 'sit'), ('laptop3', 'sit')])}
 pj = os.path.join(out, 'poses.json'); poses = json.load(open(pj)) if os.path.exists(pj) else {}
 for old in ('tr1', 'tr2'): poses.pop(old, None)          # superseded by the redrawn think pair
 for sheet, (ref, figs) in SHEETS.items():
@@ -38,6 +43,7 @@ for sheet, (ref, figs) in SHEETS.items():
             ea, eb = earspan(mask); xe = round(HEAD_X - (ea + eb) / 2 * sc)
             if abs(xe - x) > 20: x = xe                              # hair or tail reaches the floor (crouch): trust the ears instead
         else: x = round(500 - w / 2)
+        x += NUDGE.get(name, 0)
         big = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_LANCZOS4)
         Image.fromarray(big).save(os.path.join(out, name + '.png'), optimize=True)
         poses[name] = dict(x=int(x), y=int(906 - h), w=int(w), h=int(h), kind=kind); print(name, poses[name], 'scale', round(sc, 3))
