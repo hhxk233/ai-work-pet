@@ -7,10 +7,10 @@ continuous outline, as in the approved front view.
 
 The torso layer comes from the approved front view with the head masked out, and on the viewer's left the
 mask stopped just short of the chin outline, so a short brown stroke was left lying on the collar frill. It
-stays with the body when the head moves and reads as a stray line under the chin. It is recoloured to the
-navy of the frill outlines so it becomes the top edge of the frill.
+stays with the body when the head moves and reads as a stray line under the chin. The same stroke, with its
+white highlight, was also painted into the back-hair layer behind that cheek. Both are removed.
 
-usage: fix_chin.py <tex dir> [head|body]   (rewrites head.png and/or body.png in place; run once on the
+usage: fix_chin.py <tex dir> [head|body]   (rewrites head.png, or body.png and hair_back.png, in place; run once on the
        output of prep_layers.py; default both)
 """
 import sys, json, os
@@ -19,15 +19,37 @@ from PIL import Image
 
 tex = sys.argv[1]; which = sys.argv[2] if len(sys.argv) > 2 else 'both'
 if which in ('body', 'both'):
-    mb = json.load(open(os.path.join(tex, 'manifest.json')))['body']
-    bim = np.asarray(Image.open(os.path.join(tex, 'body.png')).convert('RGBA')).astype(np.float64)
-    n = 0
-    for (xa, xb) in ((394, 454), (526, 538)):                       # the two leftover stretches; the bow gem between them is gold and must stay
-        reg = bim[0:574 - mb['y'], xa - mb['x']:xb - mb['x']]
-        lum = reg[..., :3].mean(-1); brown = (reg[..., 3] > 0) & (reg[..., 0] - reg[..., 2] > -4) & (lum < 150)
-        reg[brown, 0] = lum[brown] * 0.80; reg[brown, 1] = lum[brown] * 0.86; reg[brown, 2] = lum[brown] * 1.34; n += int(brown.sum())
+    man_all = json.load(open(os.path.join(tex, 'manifest.json')))
+    # torso: the leftover chin stroke is the top one or two brown rows; the frill's own dark outline lies right under it
+    mb = man_all['body']; bim = np.asarray(Image.open(os.path.join(tex, 'body.png')).convert('RGBA')).astype(np.float64); n = 0
+    for (xa, xb) in ((394, 456), (526, 538)):                       # two stretches; the bow gem between them is gold and must stay
+        for x in range(xa - mb['x'], xb - mb['x']):
+            ys = np.where(bim[:40, x, 3] > 0)[0]
+            for y in ys[:4]:
+                p = bim[y, x]
+                if p[0] - p[2] > 4 or p[3] < 80: bim[y, x, 3] = 0; n += 1      # brown, or the faint antialiased row above it
+                else: break
+            # In the approved drawing the chin lies directly on the white frill. Carry the frill up behind the chin so
+            # no back hair shows through between the chin line and the frill, and drop the frill's own top outline there.
+            if not (394 - mb['x'] <= x < 452 - mb['x']): continue
+            ys = np.where(bim[:40, x, 3] > 0)[0]
+            if not len(ys): continue
+            top = ys[0]; lum = bim[top:top + 7, x, :3].mean(-1); light = np.where(lum >= 120)[0]
+            if not len(light): continue                              # sleeve or bow, not frill
+            f = top + light[0]; lum2 = bim[f:f + 6, x, :3].mean(-1); clean = np.where(lum2 >= 185)[0]
+            g = f + (clean[0] if len(clean) else 0)                  # skip the grey antialiased rows of the old outline
+            c = np.median(bim[g:g + 4, x, :3], 0)
+            bim[max(f - 7, 0):g, x, :3] = c; bim[max(f - 7, 0):g, x, 3] = 255
     Image.fromarray(np.clip(bim, 0, 255).round().astype(np.uint8)).save(os.path.join(tex, 'body.png'))
-    print('torso: recoloured', n, 'pixels of leftover chin outline')
+    # back hair: the same stroke, with its white highlight, was painted into the hair behind the viewer's-left cheek
+    mh = man_all['hair_back']; him = np.asarray(Image.open(os.path.join(tex, 'hair_back.png')).convert('RGBA')).copy()
+    import cv2
+    x0, x1, y0, y1 = 350 - mh['x'], 404 - mh['x'], 530 - mh['y'], 570 - mh['y']
+    reg = him[y0:y1, x0:x1].astype(int); bad = (reg[..., 3] > 0) & (reg[..., 0] >= reg[..., 2] - 25)       # anything that is not hair blue
+    mask = np.zeros(him.shape[:2], np.uint8); mask[y0:y1, x0:x1] = cv2.dilate(bad.astype(np.uint8), np.ones((5, 5), np.uint8))
+    him[..., :3] = cv2.inpaint(np.ascontiguousarray(him[..., :3]), mask, 4, cv2.INPAINT_TELEA)
+    Image.fromarray(him).save(os.path.join(tex, 'hair_back.png'))
+    print('torso: removed', n, 'pixels of leftover chin outline; back hair: repainted', int(bad.sum()), 'pixels')
 if which == 'body': sys.exit()
 man = json.load(open(os.path.join(tex, 'manifest.json')))['head']
 OX, OY = man['x'], man['y']
