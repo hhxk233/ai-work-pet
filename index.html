@@ -1,8 +1,83 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#edf5fb"><meta name="description" content="会自己散步、开工、吃饭和抱鲸鱼的 DeepSeek 大肥鱼网页桌宠。点击互动，右键选择动作。"><title>大肥鱼的小房间 · 高清互动桌宠</title><link rel="stylesheet" href="pet.css"><script defer src="motion.js"></script><script defer src="props.js"></script><script defer src="pet.js"></script></head><body>
-<header><a class="brand" href="https://ai-comic-hhxk233.pages.dev/">DeepSeek 大肥鱼<span>一只小鲸鱼的陪伴日常</span></a><div class="head-links"><a class="github" href="https://github.com/hhxk233/ai-work-pet">GitHub ↗</a><a href="downloads/deepseek-live2d-source.zip" download>下载模型 ↗</a><button data-help>怎么玩</button></div></header>
-<main><div class="intro"><span class="eyebrow">大肥鱼的小房间</span><h1>你忙你的，<br>我在这里。</h1><p>偶尔跑两步，偶尔敲敲键盘。<br>饭要好好吃，也要记得休息。</p></div><div class="scene-decoration" aria-hidden="true"></div><div class="floor" aria-hidden="true"></div><div id="pet" class="pet" tabindex="0" role="button" aria-label="大肥鱼，点击互动，右键选择动作"><span class="speech" role="status" aria-live="polite"></span><span class="shadow" aria-hidden="true"></span><canvas aria-hidden="true"></canvas></div></main>
-<div class="status" id="status" role="status">大肥鱼正在来这里……</div><div class="hint">点击互动 · 拖动换位置 · 右键或长按选动作</div>
-<nav class="dock" aria-label="桌宠互动"><button data-action="work">电脑开工</button><button data-action="rice">吃白米饭</button><button data-action="rest">抱抱鲸鱼</button><span class="divider"></span><button data-auto aria-pressed="true">自动闲逛</button><button data-menu aria-expanded="false" aria-controls="menu">动作 ⋯</button></nav>
-<div class="menu" id="menu" role="menu" hidden><div class="menu-title">今天想做什么？</div><button role="menuitem" data-action="wave">挥挥手 <kbd>你好呀</kbd></button><button role="menuitem" data-action="jump">开心跳一下</button><button role="menuitem" data-action="left">向左小跑</button><button role="menuitem" data-action="right">向右小跑</button><hr><button role="menuitem" data-action="work">打开电脑工作</button><button role="menuitem" data-action="rice">端起白米饭吃</button><button role="menuitem" data-action="rest">抱小鲸鱼休息</button><button role="menuitem" data-action="think">歪头想一想</button><button role="menuitem" data-action="stretch">伸个懒腰</button><button role="menuitem" data-action="failed">歪头撒个娇</button><button role="menuitem" data-action="idle">就在这里发呆</button><hr><button role="menuitem" data-auto aria-pressed="true">自动闲逛</button><button role="menuitem" data-size>切换大／小只</button><button role="menuitem" data-pause aria-pressed="false">暂停动画</button></div>
-<dialog class="help" id="help"><h2>大肥鱼会陪着你</h2><p>打开页面，她会自己散步，过一会儿随机工作、吃饭或休息。点击她会收到回应，也可以拖动她换个位置。</p><p>右键点击大肥鱼，或点底部“动作”，就能指定动作。手机支持长按。键盘聚焦她后按回车互动，按 Shift+F10 打开动作菜单。</p><p>不想她走动时可以关闭“自动闲逛”。系统开启减少动态效果时，默认安静待着。</p><p><a href="media/showcase.mp4">观看 2 分 20 秒展示视频</a> · <a href="downloads/deepseek-live2d-source.zip" download>下载分层模型与源文件</a></p><p class="reduce-note">非官方同人创作。按原设定重制的分层互动角色。眨眼、小步走动、抱鲸鱼，也会搬出电脑和吃白米饭。</p><button>知道啦</button></dialog><noscript>请启用 JavaScript 与大肥鱼互动。你也可以下载仓库中的图集和展示视频。</noscript>
-</body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>大肥鱼 v05 · 样片（第二版）</title>
+<style>
+  :root { color-scheme: light; --ink:#22304f; --soft:#6d7fa3; --line:#d5e0f0; }
+  html,body { margin:0; height:100%; font:15px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:linear-gradient(#f5f9fe,#e7eff9); overflow:hidden; }
+  header { position:fixed; left:24px; top:18px; right:24px; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; pointer-events:none; }
+  h1 { font-size:18px; margin:0; letter-spacing:.02em; } header p { margin:2px 0 0; color:var(--soft); font-size:13px; max-width:46ch; }
+  #floor { position:fixed; left:0; right:0; bottom:0; height:17vh; background:linear-gradient(#dde8f6,#d0ddef); }
+  #pet { position:fixed; bottom:calc(17vh - 26px); left:0; touch-action:none; cursor:grab; user-select:none; -webkit-user-select:none; }
+  #pet.drag { cursor:grabbing; }
+  #shadow { position:fixed; bottom:calc(17vh - 12px); height:24px; border-radius:50%; background:radial-gradient(closest-side,rgba(40,60,110,.26),rgba(40,60,110,0)); pointer-events:none; }
+  nav { position:fixed; left:50%; bottom:18px; transform:translateX(-50%); display:flex; gap:4px; max-width:96vw; overflow-x:auto; white-space:nowrap; padding:6px; background:rgba(255,255,255,.86); border:1px solid var(--line); border-radius:999px; backdrop-filter:blur(8px); }
+  button { font:inherit; color:var(--ink); background:transparent; border:0; padding:7px 14px; border-radius:999px; cursor:pointer; }
+  button:hover, button[aria-pressed="true"] { background:#e4edfb; }
+  #menu { position:fixed; display:none; flex-direction:column; min-width:132px; padding:6px; background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:0 10px 30px rgba(40,60,110,.16); z-index:5; }
+  #menu button { text-align:left; border-radius:9px; }
+  @media (max-width:520px){ header p{display:none} nav{max-width:94vw; overflow-x:auto} }
+</style>
+</head>
+<body>
+<header><div><h1>大肥鱼 · v05 样片（第二版）</h1><p>点一下她会开心地跳，拖动换位置，右键或长按选动作。</p></div></header>
+<div id="floor"></div><div id="shadow"></div>
+<canvas id="pet"></canvas>
+<nav aria-label="动作">
+  <button data-act="rice">吃白米饭</button><button data-act="laptop">电脑开工</button><button data-act="think">思考</button><button data-act="wave">挥手</button><button data-act="stretch">伸懒腰</button><button data-act="whale">抱鲸鱼</button><button data-act="rest">休息</button><button data-act="jump">跳</button>
+  <button data-act="walkL">← 走</button><button data-act="walkR">走 →</button>
+  <button id="auto" aria-pressed="true">自动闲逛</button>
+</nav>
+<div id="menu" role="menu"><button data-act="rice">吃白米饭</button><button data-act="laptop">电脑开工</button><button data-act="think">思考</button><button data-act="wave">挥手</button><button data-act="stretch">伸懒腰</button><button data-act="whale">抱鲸鱼</button><button data-act="rest">休息</button><button data-act="jump">跳一下</button><button data-act="walkL">向左走走</button><button data-act="walkR">向右走走</button><button data-act="halt">停下</button></div>
+<script src="engine/pet-engine.js"></script>
+<script src="characters/deepseek/rig.js"></script>
+<script src="characters/deepseek/motions.js"></script>
+<script src="characters/deepseek/load.js"></script>
+<script>
+(async () => {
+  const c = document.getElementById('pet'), sh = document.getElementById('shadow'), menu = document.getElementById('menu'), autoBtn = document.getElementById('auto');
+  const H = () => Math.max(280, Math.min(490, innerHeight * 0.55)), view = { w: 900, h: 990 };
+  let cssH = H(), cssW = cssH * view.w / view.h, S = cssH / view.h, dpr = Math.min(2, devicePixelRatio || 1);
+  const size = () => { cssH = H(); cssW = cssH * view.w / view.h; S = cssH / view.h; c.style.width = cssW + 'px'; c.style.height = cssH + 'px'; c.width = Math.round(cssW * dpr); c.height = Math.round(cssH * dpr); };
+  size(); addEventListener('resize', size);
+  const { pet, director } = await loadDeepSeek(c);
+  let x = innerWidth * 0.5 - cssW / 2, auto = true, idleFor = 0, nextAt = 3, walkLeft = 0, drag = null, lift = 0;
+  const act = a => { menu.style.display = 'none'; idleFor = 0;
+    if (a === 'walkL' || a === 'walkR') { director.stop(); director.walk(a === 'walkL' ? -1 : 1); walkLeft = 2.6; }
+    else if (a === 'halt') { director.halt(); walkLeft = 0; } else { director.halt(); walkLeft = 0; director.play(a); } };
+  document.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); act(b.dataset.act); }));
+  autoBtn.onclick = () => { auto = !auto; autoBtn.setAttribute('aria-pressed', auto); if (!auto) { director.halt(); walkLeft = 0; } };
+  // click / drag / context menu / long-press
+  let press = null;
+  c.addEventListener('pointerdown', e => { if (e.button === 2) return; c.setPointerCapture(e.pointerId); press = { x: e.clientX, y: e.clientY, x0: x, t: performance.now(), moved: false, timer: setTimeout(() => { if (press && !press.moved) { openMenu(press.x, press.y); press = null; } }, 520) }; });
+  c.addEventListener('pointermove', e => { if (!press) return; const dx = e.clientX - press.x; if (Math.abs(dx) > 5 || Math.abs(e.clientY - press.y) > 5) { press.moved = true; clearTimeout(press.timer); c.classList.add('drag'); director.halt(); walkLeft = 0; } if (press.moved) { const nx = press.x0 + dx; drag = { v: (nx - x) }; x = nx; } });
+  const up = () => { if (!press) return; clearTimeout(press.timer); c.classList.remove('drag'); if (!press.moved && !director.busy) act('jump'); press = null; drag = null; };
+  c.addEventListener('pointerup', up); c.addEventListener('pointercancel', up);
+  const openMenu = (px, py) => { menu.style.display = 'flex'; menu.style.left = Math.min(px, innerWidth - 150) + 'px'; menu.style.top = Math.max(8, Math.min(py - 20, innerHeight - 220)) + 'px'; };
+  c.addEventListener('contextmenu', e => { e.preventDefault(); openMenu(e.clientX, e.clientY); });
+  addEventListener('pointerdown', e => { if (!menu.contains(e.target) && e.target !== c) menu.style.display = 'none'; });
+
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (auto && !press) {                         // roam: stroll now and then, sometimes think or wave
+      if (walkLeft > 0) { walkLeft -= dt; if (walkLeft <= 0) director.halt(); }
+      else if (!director.busy && director.walkW === 0) { idleFor += dt; if (idleFor > nextAt) { idleFor = 0; nextAt = 3 + Math.random() * 5; const r = Math.random();
+        if (r < 0.55) { const mid = x + cssW / 2; const dir = mid < innerWidth * 0.25 ? 1 : mid > innerWidth * 0.75 ? -1 : (Math.random() < 0.5 ? -1 : 1); director.walk(dir); walkLeft = 1.6 + Math.random() * 2.4; }
+        else { const pool = ['think', 'wave', 'stretch', 'jump', 'rice', 'laptop', 'whale', 'rest']; director.play(pool[Math.floor(Math.random() * pool.length)]); } } }
+    } else if (walkLeft > 0) { walkLeft -= dt; if (walkLeft <= 0) director.halt(); }
+    director.update(pet, dt);
+    if (drag) { pet.P.lean += Math.max(-14, Math.min(14, drag.v * 1.4)); drag.v *= 0.8; }   // dragging tugs the body; hair and tail follow through
+    pet.update(dt); pet.draw();
+    x += director.vx * S * dt; const minX = -cssW * 0.25, maxX = innerWidth - cssW * 0.75;
+    if (x < minX) { x = minX; if (director.walkTarget) director.walk(1); } if (x > maxX) { x = maxX; if (director.walkTarget) director.walk(-1); }
+    c.style.transform = `translate3d(${x}px,0,0)`;
+    const k = 1 - pet.P.jump / 90, sw = 190 * S * 1.05 * k; sh.style.width = sw + 'px'; sh.style.left = (x + (500 - 60) * S - sw / 2) + 'px'; sh.style.opacity = k;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})().catch(e => { document.body.insertAdjacentHTML('beforeend', '<pre style="position:fixed;left:24px;top:90px;color:#b00">' + (e.stack || e) + '</pre>'); });
+</script>
+</body>
+</html>

@@ -1,42 +1,85 @@
-# AI Work Pet · AI 桌宠
+# AI Work Pet · 大肥鱼（DeepSeek）v05
 
-DeepSeek 大肥鱼的分层互动桌宠，后续可以加入其他 AI 角色。
+网页桌宠。先做 DeepSeek，之后是 GPT、Claude、Gemini、Grok，共用一个引擎，每个角色有自己的原画、绑定和动作。
 
-[打开互动网页](https://ai-comic-hhxk233.pages.dev/pet/) · [完整工程下载](https://ai-comic-hhxk233.pages.dev/pet/downloads/deepseek-live2d-source.zip) · [2 分 20 秒展示](https://ai-comic-hhxk233.pages.dev/pet/media/showcase.mp4)
+## 怎么看
 
-![本版造型](previews/rig-preview.jpg)
+```
+git clone https://github.com/hhxk233/ai-work-pet.git
+cd ai-work-pet
+python -m http.server 8000 --bind 127.0.0.1
+```
 
-## 本版重制
+打开 http://127.0.0.1:8000/ 。底部按钮是全部动作，加左右走和自动闲逛。点她一下会跳，拖动换位置，右键或长按选动作。
 
-v04 参考原设定重做了短身体、大头、小拳头和柔和的蓝色长发。用户已确认这版美术方向。每个显示帧实时计算同一套分层模型的姿势，无神经补帧。
+`samples/` 里是同一套代码逐帧导出的样片。旧的 v04（P2L 播放器版）整套保留在 `legacy/v04/`。
 
-包含呼吸眨眼、小步走动、挥手、思考、跳跃、伸懒腰、撒娇、抱小鲸鱼、搬出电脑并围绕铰链开盖打字，以及端碗舀白米饭送入口中。饭碗、勺子和握持手使用明确接触锚点，抬手时手腕独立控制。中途换动作会先收好道具。
+## 做法
 
-打开后自动闲逛和随机互动。点击回应、拖动换位置、右键或手机长按指定动作；可暂停、调整大小。漫画网站也有同一只悬浮角色。
+v04 和 v05 第一版都让手臂绕关节转，这套原画撑不住，关节很难看。现在的规则只有一条：
 
-展示视频是实际网页模型运行时按 1/60 秒采集的 1280×720、60fps、140 秒渲染视频。浏览器实时帧率取决于设备与浏览器。视频没有 AI 补帧，不是桌面屏幕录制。
+**手臂不转动。手臂姿势不同，就换一张画好的图。**
 
-## 本地运行
+- **待机和走动**用分层模型：呼吸、眨眼、视线漂移、转头、头发 / 尾巴 / 裙摆 / 耳鳍 / 呆毛的物理跟随、双脚交替迈步。
+- **正面的身体和手臂直接取自定稿图**：肩膀在身体两侧，白色肩带褶边露出来，拳头在胸口两边。v04 的分层把手臂涂掉后换成了两只在领结处汇合的大袖子，看起来像手长在胸口，这一层已经弃用。
+- **动作**用整张姿势图，每张都绑在同一副骨骼上，所以端着碗的时候照样在呼吸、头发照样在飘：
 
-在仓库目录运行 `python -m http.server 8000`，然后打开 `http://localhost:8000/`。通过 HTTP 加载 WebAssembly 与模型，无需安装前端依赖。
+  | 动作 | 姿势顺序 | 图的来源 |
+  | --- | --- | --- |
+  | 吃白米饭 | 端碗 → 勺子进碗 → 送到嘴边 → 闭眼嚼，连吃三口 | v04 关键姿势表 |
+  | 电脑 | 抱着电脑 → 坐下放好 → 掀开 → 打字 → 合上 → 抱起 | v04 关键姿势表 |
+  | 思考 | 拳头抵下巴 → 抬眼“唔” → 放下 → 想到了跳一下 | 11/14 新画 |
+  | 挥手 | 手举到脸旁，左右摆四下 | 11/14 新画 |
+  | 伸懒腰 | 双手举过头打哈欠 → 手放平眯眼 | 11/14 新画 |
+  | 抱鲸鱼 | 抱着小鲸鱼左右晃 → 趴到大鲸鱼上眯一会儿 → 起来 | 11/14 新画 |
+  | 休息 | 坐着打瞌睡点头 → 躺下睡着 → 醒来 | 11/14 新画 |
+  | 跳 | 蹲 → 跳起 → 落地回弹（点她一下也是这个） | 11/14 新画 |
 
-| 文件 | 用途 |
+- 姿势之间一律直接切换，不做叠化：两张不同的画叠在一起，哪怕只有几帧也会出重影（两张脸、两只手）。切换落在一次下蹲回弹上，站姿和坐姿、躺姿之间回弹更大；挥手的两张来回换时不回弹。
+- v04 关键姿势表里的图用 Real-ESRGAN 动漫模型放大过；11/14 新画的六张是照着定稿图的尺寸模板画的，头身比和定稿图一致，只做了抠绿幕和缩放。
+
+`samples/deepseek_v05_sample.mp4`：待机、走、吃白米饭、电脑。`samples/deepseek_v05_sample2.mp4`：思考、挥手、伸懒腰、跳、抱鲸鱼、休息。
+
+## 文件
+
+| 路径 | 内容 |
 | --- | --- |
-| `pet.js`、`motion.js`、`props.js` | 互动、连续动作与道具锚点 |
-| `widget.js` | 嵌入现有网页的悬浮角色 |
-| `model/model.p2lrt` | 本网页实际加载的模型 |
-| `model/cubism/` | MOC3、CMO3、配置和纹理 |
-| `source/DeepSeek.psd2live` | 完整可编辑绑定工程 |
-| `source/layers/`、`rig/parts/` | 分层原画与道具 |
-| `downloads/deepseek-live2d-source.zip` | 工程、模型、原画与可运行网页 |
-| `media/showcase.mp4` | 本版展示视频 |
+| `engine/pet-engine.js` | 通用引擎：网格、蒙皮、弹簧、渲染。不含角色数据 |
+| `characters/deepseek/rig.js` | 骨骼、权重、变形器、弹簧；姿势图的绑定方式 |
+| `characters/deepseek/motions.js` | 待机、走动、各动作的姿势时间表 |
+| `characters/deepseek/tex/` | 分层模型贴图 |
+| `characters/deepseek/tex/poses/` | 20 张姿势图和它们的位置清单 `poses.json` |
+| `tools/cut_poses.py` | 从 v04 关键姿势表（米色背景）里抠图 |
+| `tools/cut_green.py` | 从绿幕姿势表里抠图并登记位置 |
+| `tools/upscale.py` | 放大（需要 torch 和 Real-ESRGAN 动漫权重） |
+| `tools/prep_layers.py`、`capture.py`、`poses.py` | 生成分层贴图、导出视频、导出姿势对照表 |
 
-MOC3 已在官方 Cubism Native Core 实际加载并渲染测试；CMO3 未在 Cubism Editor 中人工验收。完整编辑源采用 PSD2Live 格式。其他宿主需要自行接入网页层的道具与动作。这是可运行的网页桌宠工程，目前没有独立 Windows 桌宠安装程序。
 
-## 旧版兼容与许可
+其他角色：新建 `characters/<名字>/`，各自的 rig.js、motions.js、贴图和姿势图，引擎共用。
 
-`assets/spritesheet.png`、`pet.json` 和 `preview.html` 保留旧版 ChatGPT Pets 图集兼容；它们不代表 v04 网页效果。原生 Pets 的图集宿主不能直接运行本网页模型。
+## 已知的不足
 
-角色为 AI 参考用户提供的设定生成的非官方同人创作，与 DeepSeek 官方没有隶属关系。原始私人参考图、工作区资料、工具安装包与账号信息未公开。第三方播放器与运行库保留 MIT 许可，美术作品暂未另行指定使用许可证。
+- **姿势切换是换图，不是连续补间。** 这是有意的：之前的补帧失真就出在硬补中间帧上。
+- **姿势图上不能眨眼**（眼睛画死在图里）。
+- 眼珠不能单独转动，没有鼠标视线跟随。
+- 没有独立的 Windows 桌宠程序，还是网页。
 
-文件校验值见 `SHA256SUMS.txt`。
+## 新增姿势的流程
+
+1. 生成姿势图：纯绿背景（#00B140），一张两个姿势，人物和定稿图同头身比、760 像素高；站姿用 `python tools/check_proportions.py` 自检。
+2. `python tools/cut_green.py <姿势图目录> characters/deepseek/tex/poses`：抠图、缩放、写入 `poses.json`。新表要先在脚本顶部的 `SHEETS` 里登记名字和类型（stand / sit / lie）。
+3. 在 `characters/deepseek/motions.js` 的 `CLIPS` 里加一段姿势时间表。
+
+## 嵌进别的网站
+
+`web/` 是给网站用的精简版：贴图是 WebP（共 2.1 MB），`web/widget.js` 是全站悬浮桌宠，`web/index.html` 是单独的桌宠页。把 `web/` 整个放到站点的某个目录下，在页面里加一行：
+
+```html
+<script defer src="pet/widget.js"></script>
+```
+
+它在页面空闲后才加载；手机、阅读页和开启“减少动态效果”时默认收成一个小按钮，点开一次后会记住。
+
+## 演示视频
+
+`samples/deepseek_v05_demo.mp4`（1 分 40 秒，带字幕和配乐）。画面由 `demo.html` 逐帧导出，配乐是 `tools/make_bgm.py` 用程序合成的八音盒循环，没有用任何现成曲子。
