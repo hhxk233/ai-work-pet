@@ -1,0 +1,38 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "registered-layout.psd2live.moc3",
+		"Textures": [
+			"registered-layout.psd2live.4096/texture_00.png",
+			"registered-layout.psd2live.4096/texture_01.png"
+		],
+		"DisplayInfo": "registered-layout.psd2live.cdi3.json",
+		"Expressions": [
+			{
+				"Name": "Smile",
+				"File": "registered-layout.psd2live.smile.exp3.json"
+			},
+			{
+				"Name": "Sad",
+				"File": "registered-layout.psd2live.sad.exp3.json"
+			},
+			{
+				"Name": "Angry",
+				"File": "registered-layout.psd2live.angry.exp3.json"
+			},
+			{
+				"Name": "Surprised",
+				"File": "registered-layout.psd2live.surprised.exp3.json"
+			}
+		]
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": [
+				"ParamMouthOpenY"
+			]
+		}
+	]
+}

@@ -1,100 +1,28 @@
 {
   "canvas": [
-    640,
-    640
+    1024,
+    1024
   ],
   "parameters": [
     {
-      "id": "ParamElbowScreenR",
-      "name": "ParamElbowScreenR",
-      "min": -150.0,
-      "max": 150.0,
+      "id": "ParamSleeveReveal",
+      "name": "Connecting sleeve support",
+      "min": 0.0,
+      "max": 1.0,
       "default": 0.0,
       "repeat": false
     },
     {
-      "id": "ParamElbowScreenL",
-      "name": "ParamElbowScreenL",
-      "min": -150.0,
-      "max": 150.0,
+      "id": "ParamPropMode",
+      "name": "Foreground grip replacement",
+      "min": 0.0,
+      "max": 1.0,
       "default": 0.0,
       "repeat": false
     },
     {
-      "id": "ParamArmScreenR",
-      "name": "ParamArmScreenR",
-      "min": -120.0,
-      "max": 120.0,
-      "default": 0.0,
-      "repeat": false
-    },
-    {
-      "id": "ParamArmScreenL",
-      "name": "ParamArmScreenL",
-      "min": -120.0,
-      "max": 120.0,
-      "default": 0.0,
-      "repeat": false
-    },
-    {
-      "id": "ParamLegScreenR",
-      "name": "ParamLegScreenR",
-      "min": -25.0,
-      "max": 25.0,
-      "default": 0.0,
-      "repeat": false
-    },
-    {
-      "id": "ParamLegScreenL",
-      "name": "ParamLegScreenL",
-      "min": -25.0,
-      "max": 25.0,
-      "default": 0.0,
-      "repeat": false
-    },
-    {
-      "id": "ParamTailSwing",
-      "name": "ParamTailSwing",
-      "min": -8.0,
-      "max": 8.0,
-      "default": 0.0,
-      "repeat": false
-    },
-    {
-      "id": "ParamHairSway",
-      "name": "ParamHairSway",
-      "min": -3.0,
-      "max": 3.0,
-      "default": 0.0,
-      "repeat": false
-    },
-    {
-      "id": "ParamHeadTilt",
-      "name": "ParamHeadTilt",
-      "min": -10.0,
-      "max": 10.0,
-      "default": 0.0,
-      "repeat": false
-    },
-    {
-      "id": "ParamBodyBob",
-      "name": "Body Bob",
-      "min": -40.0,
-      "max": 15.0,
-      "default": 0.0,
-      "repeat": false
-    },
-    {
-      "id": "ParamBodyTilt",
-      "name": "Body Tilt",
-      "min": -5.0,
-      "max": 5.0,
-      "default": 0.0,
-      "repeat": false
-    },
-    {
-      "id": "ParamEyeLOpen",
-      "name": "Left Eye Open",
+      "id": "ParamMouthOpenY",
+      "name": "ParamMouthOpenY",
       "min": 0.0,
       "max": 1.0,
       "default": 1.0,
@@ -102,17 +30,145 @@
     },
     {
       "id": "ParamEyeROpen",
-      "name": "Right Eye Open",
+      "name": "ParamEyeROpen",
       "min": 0.0,
       "max": 1.0,
       "default": 1.0,
       "repeat": false
     },
     {
-      "id": "ParamMouthOpenY",
-      "name": "Mouth Open",
+      "id": "ParamEyeLOpen",
+      "name": "ParamEyeLOpen",
       "min": 0.0,
       "max": 1.0,
+      "default": 1.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamWristScreenR",
+      "name": "Mitten orientation R",
+      "min": -180.0,
+      "max": 180.0,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamWristScreenL",
+      "name": "Mitten orientation L",
+      "min": -180.0,
+      "max": 180.0,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamFootLiftR",
+      "name": "Short foot lift R",
+      "min": 0.0,
+      "max": 1.0,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamFootLiftL",
+      "name": "Short foot lift L",
+      "min": 0.0,
+      "max": 1.0,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamElbowScreenR",
+      "name": "Screen right elbow",
+      "min": -170.0,
+      "max": 170.0,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamArmScreenR",
+      "name": "Screen right upper arm",
+      "min": -160.0,
+      "max": 160.0,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamElbowScreenL",
+      "name": "Screen left elbow",
+      "min": -170.0,
+      "max": 170.0,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamArmScreenL",
+      "name": "Screen left upper arm",
+      "min": -160.0,
+      "max": 160.0,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamLegScreenR",
+      "name": "Screen right short step",
+      "min": -10.0,
+      "max": 10.0,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamLegScreenL",
+      "name": "Screen left short step",
+      "min": -10.0,
+      "max": 10.0,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamTailSwing",
+      "name": "Tail sway",
+      "min": -4.0,
+      "max": 4.0,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamHairSway",
+      "name": "Hair sway",
+      "min": -1.5,
+      "max": 1.5,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamHeadTilt",
+      "name": "Head tilt",
+      "min": -3.0,
+      "max": 3.0,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamSeat",
+      "name": "Compact kneel",
+      "min": 0.0,
+      "max": 1.0,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamBodyBob",
+      "name": "Body gentle bob",
+      "min": -12.0,
+      "max": 12.0,
+      "default": 0.0,
+      "repeat": false
+    },
+    {
+      "id": "ParamBodyTilt",
+      "name": "Body gentle tilt",
+      "min": -2.5,
+      "max": 2.5,
       "default": 0.0,
       "repeat": false
     }

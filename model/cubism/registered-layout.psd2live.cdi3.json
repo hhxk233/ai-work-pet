@@ -1,0 +1,186 @@
+{
+	"Version": 3,
+	"Parameters": [
+		{
+			"Id": "ParamSleeveReveal",
+			"GroupId": "",
+			"Name": "Connecting sleeve support"
+		},
+		{
+			"Id": "ParamPropMode",
+			"GroupId": "",
+			"Name": "Foreground grip replacement"
+		},
+		{
+			"Id": "ParamMouthOpenY",
+			"GroupId": "",
+			"Name": "ParamMouthOpenY"
+		},
+		{
+			"Id": "ParamEyeROpen",
+			"GroupId": "",
+			"Name": "ParamEyeROpen"
+		},
+		{
+			"Id": "ParamEyeLOpen",
+			"GroupId": "",
+			"Name": "ParamEyeLOpen"
+		},
+		{
+			"Id": "ParamWristScreenR",
+			"GroupId": "",
+			"Name": "Mitten orientation R"
+		},
+		{
+			"Id": "ParamWristScreenL",
+			"GroupId": "",
+			"Name": "Mitten orientation L"
+		},
+		{
+			"Id": "ParamFootLiftR",
+			"GroupId": "",
+			"Name": "Short foot lift R"
+		},
+		{
+			"Id": "ParamFootLiftL",
+			"GroupId": "",
+			"Name": "Short foot lift L"
+		},
+		{
+			"Id": "ParamElbowScreenR",
+			"GroupId": "",
+			"Name": "Screen right elbow"
+		},
+		{
+			"Id": "ParamArmScreenR",
+			"GroupId": "",
+			"Name": "Screen right upper arm"
+		},
+		{
+			"Id": "ParamElbowScreenL",
+			"GroupId": "",
+			"Name": "Screen left elbow"
+		},
+		{
+			"Id": "ParamArmScreenL",
+			"GroupId": "",
+			"Name": "Screen left upper arm"
+		},
+		{
+			"Id": "ParamLegScreenR",
+			"GroupId": "",
+			"Name": "Screen right short step"
+		},
+		{
+			"Id": "ParamLegScreenL",
+			"GroupId": "",
+			"Name": "Screen left short step"
+		},
+		{
+			"Id": "ParamTailSwing",
+			"GroupId": "",
+			"Name": "Tail sway"
+		},
+		{
+			"Id": "ParamHairSway",
+			"GroupId": "",
+			"Name": "Hair sway"
+		},
+		{
+			"Id": "ParamHeadTilt",
+			"GroupId": "",
+			"Name": "Head tilt"
+		},
+		{
+			"Id": "ParamSeat",
+			"GroupId": "",
+			"Name": "Compact kneel"
+		},
+		{
+			"Id": "ParamBodyBob",
+			"GroupId": "",
+			"Name": "Body gentle bob"
+		},
+		{
+			"Id": "ParamBodyTilt",
+			"GroupId": "",
+			"Name": "Body gentle tilt"
+		}
+	],
+	"ParameterGroups": [],
+	"Parts": [],
+	"Drawables": [
+		{
+			"Id": "MeshForearmScreenRight",
+			"Name": "ForearmScreenRight"
+		},
+		{
+			"Id": "MeshForearmScreenLeft",
+			"Name": "ForearmScreenLeft"
+		},
+		{
+			"Id": "MeshFaceMouthSmile",
+			"Name": "FaceMouthSmile"
+		},
+		{
+			"Id": "MeshFaceMouthOpen",
+			"Name": "FaceMouthOpen"
+		},
+		{
+			"Id": "MeshFaceEyeScreenRClosed",
+			"Name": "FaceEyeScreenRClosed"
+		},
+		{
+			"Id": "MeshFaceEyeScreenLClosed",
+			"Name": "FaceEyeScreenLClosed"
+		},
+		{
+			"Id": "MeshFaceEyeScreenROpen",
+			"Name": "FaceEyeScreenROpen"
+		},
+		{
+			"Id": "MeshFaceEyeScreenLOpen",
+			"Name": "FaceEyeScreenLOpen"
+		},
+		{
+			"Id": "MeshHeadBlank",
+			"Name": "HeadBlank"
+		},
+		{
+			"Id": "MeshBody",
+			"Name": "Body"
+		},
+		{
+			"Id": "MeshLegScreenRight",
+			"Name": "LegScreenRight"
+		},
+		{
+			"Id": "MeshLegScreenLeft",
+			"Name": "LegScreenLeft"
+		},
+		{
+			"Id": "MeshUpperArmScreenRight",
+			"Name": "UpperArmScreenRight"
+		},
+		{
+			"Id": "MeshUpperArmScreenLeft",
+			"Name": "UpperArmScreenLeft"
+		},
+		{
+			"Id": "MeshUpperSleeveSupportRight",
+			"Name": "UpperSleeveSupportRight"
+		},
+		{
+			"Id": "MeshUpperSleeveSupportLeft",
+			"Name": "UpperSleeveSupportLeft"
+		},
+		{
+			"Id": "MeshHairBack",
+			"Name": "HairBack"
+		},
+		{
+			"Id": "MeshTail",
+			"Name": "Tail"
+		}
+	]
+}
