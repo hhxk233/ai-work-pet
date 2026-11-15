@@ -4,7 +4,7 @@
 #sh{position:absolute;width:190px;height:26px;border-radius:50%;background:radial-gradient(closest-side,rgba(40,60,110,.28),rgba(40,60,110,0))}
 #c{position:absolute;width:560px;height:616px}</style>
 <div id="stage"><div id="ground"></div><div id="sh"></div><canvas id="c" width="1120" height="1232"></canvas></div>
-<script src="engine/pet-engine.js"></script><script src="characters/deepseek/rig.js"></script><script src="characters/deepseek/motions.js"></script><script src="characters/deepseek/load.js"></script>
+<script src="engine/pet-engine.js"></script><script src="engine/director.js"></script><script src="characters/deepseek/rig.js"></script><script src="characters/deepseek/motions.js"></script><script src="characters/deepseek/load.js"></script>
 <script>
 (async()=>{ const c=document.getElementById('c'), sh=document.getElementById('sh');
   const {pet,director}=await loadDeepSeek(c); const S=560/900; let x=+(new URLSearchParams(location.search).get('x')||360);

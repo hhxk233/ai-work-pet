@@ -24,7 +24,7 @@ html,body{margin:0;background:#eef3fa;font-family:"Noto Sans CJK SC","PingFang S
 <div id="cap"><div class="n"></div><h2></h2><p></p></div>
 <div id="end"><h1>点一下，拖一拖，<br>右键选动作</h1><p>打开网页就能看到，她会自己逛，<br>隔一会儿换个动作。<br>接下来是 GPT、Claude、Gemini、Grok。</p><div class="u">github.com/hhxk233/ai-work-pet</div></div>
 </div>
-<script src="engine/pet-engine.js"></script><script src="characters/deepseek/rig.js"></script><script src="characters/deepseek/motions.js"></script><script src="characters/deepseek/load.js"></script>
+<script src="engine/pet-engine.js"></script><script src="engine/director.js"></script><script src="characters/deepseek/rig.js"></script><script src="characters/deepseek/motions.js"></script><script src="characters/deepseek/load.js"></script>
 <script>
 (async()=>{ const c=document.getElementById('c'), sh=document.getElementById('sh'), $=id=>document.getElementById(id);
   const {pet,director}=await loadDeepSeek(c); const S=560/900; let x=+(new URLSearchParams(location.search).get('x')||600), T=0;

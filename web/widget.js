@@ -46,7 +46,7 @@
 
   async function boot() {
     window.DEEPSEEK_EXT = '.webp';
-    await loadScript('engine/pet-engine.js'); await loadScript('characters/deepseek/rig.js'); await loadScript('characters/deepseek/motions.js'); await loadScript('characters/deepseek/load.js');
+    await loadScript('engine/pet-engine.js'); await loadScript('engine/director.js'); await loadScript('characters/deepseek/rig.js'); await loadScript('characters/deepseek/motions.js'); await loadScript('characters/deepseek/load.js');
     const VW = 900, VH = 990, dpr = Math.min(2, devicePixelRatio || 1);
     let H, W, S; const size = () => { H = small() ? 170 : 230; W = H * VW / VH; S = H / VH; canvas.style.width = W + 'px'; canvas.style.height = H + 'px'; canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr); hit.style.width = W * 0.5 + 'px'; hit.style.height = H * 0.86 + 'px'; };
     size();

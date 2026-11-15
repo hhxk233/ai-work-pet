@@ -72,7 +72,7 @@ Then measure each sprite against the idle model: match the top 300 rows of the s
 
 Each action in `characters/<name>/motions.js` is a clip: a duration, a list of `[time, pose]`, and a function returning small overlays (bob, head tilt, tail wag) so a held drawing still looks alive. Start and end on the model (`'rig'`). Give a held pose something to do: chewing, typing bursts, nodding off.
 
-The director (idle behaviour, walking, clip playback, the pop on a cut) currently lives in DeepSeek's `motions.js` although nothing in it is specific to her. Before the second character, move it into `engine/` so a character supplies only its rig and its clips. This has not been done yet.
+The director (idle behaviour, walking, clip playback, the pop on a cut) is `engine/director.js` and is shared. A character passes it its clips, its `poses.json` and two optional hooks for motion only that character has: `idle(o, ctx)` adds to the idle parameters (DeepSeek: tail sway, ear twitch, fists riding on the breath) and `walk(ctx)` returns extra walk-cycle parameters. Numbers such as walk speed and breath period go in `tune`. See `characters/deepseek/load.js` for the call. When the director was moved out of DeepSeek's file, 1,200 captured frames were compared before and after and were identical; do the same for any later engine change.
 
 ### 7. Verify
 
@@ -99,8 +99,8 @@ The order the user asked for: show the result, then GitHub, then the website, th
 | Piece | Reuse |
 | --- | --- |
 | `engine/pet-engine.js` | As is |
-| Director inside `motions.js` | Reusable after it is moved into `engine/` |
-| `rig.js`, `motions.js` clips, `load.js` | Copy and replace all coordinates and clips |
+| `engine/director.js` | As is; character-specific motion goes in the `idle` and `walk` hooks |
+| `rig.js`, `motions.js` (clips and hooks), `load.js` | Copy and replace all coordinates, clips and hooks |
 | `tools/capture.py`, `make_bgm.py`, `demo.html`, `web/widget.js` | As is, apart from names, captions and the action list |
 | `tools/cut_green.py`, `check_proportions.py` | Same code, new constants per character |
 | `tools/prep_layers.py`, `fix_chin.py` | Specific to DeepSeek's layers; read them for the technique |

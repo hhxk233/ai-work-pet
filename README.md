@@ -46,14 +46,16 @@ v04 和 v05 第一版都让手臂绕关节转，这套原画撑不住，关节�
 | 路径 | 内容 |
 | --- | --- |
 | `engine/pet-engine.js` | 通用引擎：网格、蒙皮、弹簧、渲染。不含角色数据 |
+| `engine/director.js` | 通用导演：待机（呼吸、眨眼、视线）、走路、播放动作、换图时的回弹。所有角色共用 |
 | `characters/deepseek/rig.js` | 骨骼、权重、变形器、弹簧；姿势图的绑定方式 |
-| `characters/deepseek/motions.js` | 待机、走动、各动作的姿势时间表 |
+| `characters/deepseek/motions.js` | 各动作的姿势时间表，加上她独有的待机和走路细节（尾巴、耳鳍、小拳头） |
 | `characters/deepseek/tex/` | 分层模型贴图 |
 | `characters/deepseek/tex/poses/` | 24 张姿势图和它们的位置清单 `poses.json` |
 | `tools/cut_poses.py` | 从 v04 关键姿势表（米色背景）里抠图 |
 | `tools/cut_green.py` | 从绿幕姿势表里抠图并登记位置 |
 | `tools/upscale.py` | 放大（需要 torch 和 Real-ESRGAN 动漫权重） |
 | `tools/prep_layers.py`、`capture.py`、`poses.py` | 生成分层贴图、导出视频、导出姿势对照表 |
+| `tools/check_inbetween.py` | 检查衔接帧：除手臂、道具、表情外，是否和关键姿势一致 |
 | `tools/fix_chin.py` | 重建头部图层的下巴边缘，并处理身体图层领口上残留的一段下巴线（头一转就会露出来） |
 | `tools/match_colour.py` | 把「敲键盘」这组 v04 旧姿势图的蓝色拉到和待机模型一致 |
 
