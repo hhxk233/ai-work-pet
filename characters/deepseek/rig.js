@@ -136,7 +136,8 @@
     const yaw = P.headX * 0.2, pitch = P.headY * 0.16, r = L.rest, o = L.pre; const s = lerp(0.3, 1, clamp(P.mouth, 0, 1)), cy = 512, cx = 487, sx = lerp(0.8, 1, clamp(P.mouth, 0, 1));
     for (let k = 0; k < L.n; k++) { head3d(cx + (r[2 * k] - cx) * sx, cy + (r[2 * k + 1] - cy) * s, yaw, pitch, tmp); o[2 * k] = tmp[0]; o[2 * k + 1] = tmp[1]; }
   }
-  const T = (n, m) => Object.assign({ name: n, file: n + '.png' }, g.DEEPSEEK_TEX[n], m);
+  const EXT = () => g.DEEPSEEK_EXT || '.png';            // the site build ships .webp textures
+  const T = (n, m) => Object.assign({ name: n, file: n + EXT() }, g.DEEPSEEK_TEX[n], m);
 
   const rig = {
     name: 'deepseek', size: 1024, view: { x: 60, y: -40, w: 900, h: 990 }   /* extra headroom so a jump is never clipped */, ground: 905,
@@ -161,7 +162,7 @@
       this.sprites = Object.keys(PO);
       for (const n of this.sprites) {
         const p = PO[n], sit = p.kind !== 'stand', lie = p.kind === 'lie';
-        this.layers.push({ name: n, file: 'poses/' + n + '.png', x: p.x, y: p.y, w: p.w, h: p.h, z: 30, step: 24, alpha: 0,
+        this.layers.push({ name: n, file: 'poses/' + n + EXT(), x: p.x, y: p.y, w: p.w, h: p.h, z: 30, step: 24, alpha: 0,
           bind: lie ? () => one('hip') : sit ? sitBind : standBind, aux: sit ? () => 0 : (x, y) => sstep(640, 548, y) * 0.8, deform: headDeform });
       }
       return this;

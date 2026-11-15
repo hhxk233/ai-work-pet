@@ -2,11 +2,12 @@
 import sys, json, asyncio, os, subprocess
 from playwright.async_api import async_playwright
 out, fps, script = sys.argv[1], int(sys.argv[2]), json.loads(sys.argv[3])
-stills = None; rng = None; clip = dict(x=0, y=0, width=1280, height=720); x0 = 360
+stills = None; rng = None; page = 'harness.html'; clip = dict(x=0, y=0, width=1280, height=720); x0 = 360
 for a in sys.argv[4:]:
     if a.startswith('--stills='): stills = [float(v) for v in a[9:].split(',')]
     if a.startswith('--clip='): v = [float(q) for q in a[7:].split(',')]; clip = dict(x=v[0], y=v[1], width=v[2], height=v[3])
     if a.startswith('--x='): x0 = float(a[4:])
+    if a.startswith('--page='): page = a[7:]
     if a.startswith('--range='): rng = [int(q) for q in a[8:].split(',')]
 dur = script['dur']; ev = sorted(script['events'])
 os.makedirs(out, exist_ok=True)
@@ -15,7 +16,7 @@ async def main():
         b = await p.chromium.launch(executable_path='/usr/bin/google-chrome', args=['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--no-sandbox'])
         pg = await b.new_page(viewport=dict(width=1280, height=720))
         pg.on('console', lambda m: print('console:', m.text) if m.type == 'error' else None)
-        await pg.goto(f'http://127.0.0.1:8123/harness.html?x={x0}')
+        await pg.goto(f'http://127.0.0.1:8123/{page}?x={x0}')
         try: await pg.wait_for_function('window.ready===true', timeout=20000)
         except Exception as e: print('not ready', await pg.evaluate('window.err||document.title')); raise
         n = int(dur * fps); ei = 0; si = 0

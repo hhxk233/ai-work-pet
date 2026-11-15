@@ -69,3 +69,13 @@ v04 和 v05 第一版都让手臂绕关节转，这套原画撑不住，关节�
 1. 生成姿势图：纯绿背景（#00B140），一张两个姿势，人物和定稿图同头身比、760 像素高；站姿用 `python tools/check_proportions.py` 自检。
 2. `python tools/cut_green.py <姿势图目录> characters/deepseek/tex/poses`：抠图、缩放、写入 `poses.json`。新表要先在脚本顶部的 `SHEETS` 里登记名字和类型（stand / sit / lie）。
 3. 在 `characters/deepseek/motions.js` 的 `CLIPS` 里加一段姿势时间表。
+
+## 嵌进别的网站
+
+`web/` 是给网站用的精简版：贴图是 WebP（共 2.1 MB），`web/widget.js` 是全站悬浮桌宠，`web/index.html` 是单独的桌宠页。把 `web/` 整个放到站点的某个目录下，在页面里加一行：
+
+```html
+<script defer src="pet/widget.js"></script>
+```
+
+它在页面空闲后才加载；手机、阅读页和开启“减少动态效果”时默认收成一个小按钮，点开一次后会记住。
