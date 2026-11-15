@@ -1,0 +1,17 @@
+<!doctype html><meta charset="utf-8"><title>v05 capture harness</title>
+<style>html,body{margin:0;background:#eef3fa}#stage{position:relative;width:1280px;height:720px;overflow:hidden;background:linear-gradient(#f4f8fd,#e6eef9)}
+#ground{position:absolute;left:0;right:0;top:612px;height:108px;background:linear-gradient(#dfe9f6,#d3dff0)}
+#sh{position:absolute;width:190px;height:26px;border-radius:50%;background:radial-gradient(closest-side,rgba(40,60,110,.28),rgba(40,60,110,0))}
+#c{position:absolute;width:560px;height:616px}</style>
+<div id="stage"><div id="ground"></div><div id="sh"></div><canvas id="c" width="1120" height="1232"></canvas></div>
+<script src="engine/pet-engine.js"></script><script src="characters/deepseek/rig.js"></script><script src="characters/deepseek/motions.js"></script><script src="characters/deepseek/load.js"></script>
+<script>
+(async()=>{ const c=document.getElementById('c'), sh=document.getElementById('sh');
+  const {pet,director}=await loadDeepSeek(c); const S=560/900; let x=+(new URLSearchParams(location.search).get('x')||360);
+  const place=()=>{ c.style.left=x+'px'; c.style.top=(612+26-(905+40)*S)+'px'; const j=pet.P.jump; const k=1-j/90;
+    sh.style.left=(x+(500-60)*S-95*k)+'px'; sh.style.top=(612+26-13)+'px'; sh.style.width=190*k+'px'; sh.style.opacity=k; };
+  window.cap={pet,director,step(dt){director.update(pet,dt); pet.update(dt); x+=director.vx*S*dt; pet.draw(); place();},
+    cmd(s){ const [a,b]=s.split(':'); if(a==='walk')director.walk(+b); else if(a==='halt')director.halt(); else if(a==='play')director.play(b); else if(a==='pose'){ pet.poseState={cur:b,prev:null,u:1}; } },
+    raw(p){ if(p.pose!==undefined){ pet.poseState={cur:p.pose,prev:null,u:1}; } Object.assign(pet.P,pet.rig.params,p); pet.update(1/30); pet.draw(); place(); }, get x(){return x} };
+  for(let i=0;i<20;i++) cap.step(1/30); window.ready=true; })().catch(e=>{document.title='ERR '+e.message; console.error(e); window.err=String(e.stack||e)});
+</script>
