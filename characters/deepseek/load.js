@@ -6,6 +6,7 @@
     g.DEEPSEEK_POSES = await (await fetch(base + 'tex/poses/poses.json')).json();
     const rig = g.DeepSeekRig.build();
     const pet = new g.PetEngine.Pet(canvas, rig); await pet.load(base + 'tex/');
-    return { pet, director: new g.DeepSeekMotions.Director(11) };
+    const M = g.DeepSeekMotions;
+    return { pet, director: new g.PetEngine.Director({ clips: M.CLIPS, poses: g.DEEPSEEK_POSES, seed: 11, idle: M.idle, walk: M.walk }) };
   };
 })(window);

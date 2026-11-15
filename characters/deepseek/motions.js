@@ -1,4 +1,4 @@
-/* DeepSeek motions for PetEngine v05 (second pass).
+/* DeepSeek's action clips and her own idle / walk additions. The director that plays them is engine/director.js.
  *
  * Rule of this pass: nothing rotates around an elbow or a wrist. Arms only change by switching to a drawn pose.
  *   idle / walk  – the layered model: breath, blinks, gaze drift, head turn, hair/tail/skirt physics, feet stepping
@@ -9,10 +9,7 @@
   'use strict';
   const { track, ease, clamp, lerp, sstep } = g.PetEngine;
   const TAU = Math.PI * 2;
-  function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
-  const win = (a, b, t, f) => sstep(a, a + (f || 0.2), t) * (1 - sstep(b - (f || 0.2), b, t));   // 1 inside [a,b], soft edges
-  // a small dip just before a pose change so the switch lands on the way back up
-  const dips = (times, t) => { let v = 0; for (const s of times) v += track([[s - 0.16, 0], [s, 1, 'io'], [s + 0.22, 0, 'out']], t) * (t > s - 0.16 && t < s + 0.22 ? 1 : 0); return v; };
+  const { win, dips } = g.PetEngine.motion;
 
   const CLIPS = {
     // 吃白米饭：端着碗 → 勺子进碗 → 送到嘴边 → 嚼（重复三口）→ 端着碗 → 收起
@@ -135,88 +132,16 @@
     },
   };
 
-  class Director {
-    constructor(seed) {
-      this.r = rng(seed || 7); this.t = 0; this.nextBlink = 1.6; this.blinkT = -1; this.dbl = false;
-      this.gaze = { x: 0, y: 0, tx: 0, ty: 0, next: 2.5 }; this.twitch = { t: -1, side: 0, next: 5 };
-      this.walkW = 0; this.walkTarget = 0; this.phase = 0; this.dir = 1; this.face = 0; this.settle = -1;
-      this.clip = null; this.clipT = 0; this.clipW = 0; this.prev = null; this.prevT = 0; this.prevW = 0;
-      this.pose = { cur: 'rig', prev: null, u: 1 }; this.pop = -1;
-      this.vx = 0; // model px / s the host should move the pet by
-    }
-    play(name) { if (!CLIPS[name]) return; if (this.clip) { this.prev = this.clip; this.prevT = this.clipT; this.prevW = this.clipW; } this.clip = CLIPS[name]; this.clipName = name; this.clipT = 0; this.clipW = 0; this.walkTarget = 0; }
-    stop() { if (this.clip) { this.prev = this.clip; this.prevT = this.clipT; this.prevW = this.clipW; this.clip = null; this.clipName = null; } }
-    walk(dir) { this.stop(); this.dir = dir; this.walkTarget = 1; }
-    halt() { this.walkTarget = 0; }
-    get busy() { return !!this.clip || this.pose.cur !== 'rig'; }
-    setPose(n, soft, cut) {
-      const p = this.pose; if (n === p.cur) return;
-      const kind = q => (g.DEEPSEEK_POSES && g.DEEPSEEK_POSES[q] ? g.DEEPSEEK_POSES[q].kind : 'stand');
-      const big = cut || kind(n) !== kind(p.cur);          // standing <-> sitting, or a clip that asks for hard switches (the jump)
-      // Every switch is a hard cut. A dissolve between two different drawings always shows a double image
-      // (two faces, two hands) for a few frames, however short it is. The squash-and-settle carries the change instead.
-      this.popAmp = big ? 3 : 1.3;
-      p.prev = p.cur; p.cur = n; p.u = 1; p.cut = true; this.pop = 0;
-      if (soft && !big && n !== 'rig' && p.prev !== 'rig') this.pop = -1;   // back-and-forth swaps (waving) should not bounce every time
-    }
-
-    update(pet, dt) {
-      const P = pet.P, r = this.r; this.t += dt; const t = this.t;
-      // ---------- idle (also keeps running underneath every held pose)
-      const o = Object.assign({}, pet.rig.params);
-      o.breath = 0.5 - 0.5 * Math.cos(t * TAU / 3.4);
-      const gz = this.gaze; if (t > gz.next) { gz.tx = (r() * 2 - 1) * 0.3; gz.ty = (r() * 2 - 1) * 0.18; gz.next = t + 2.2 + r() * 3.5; }
-      const gk = 1 - Math.exp(-dt * 2.2); gz.x += (gz.tx - gz.x) * gk; gz.y += (gz.ty - gz.y) * gk;
-      const onRig = this.pose.cur === 'rig' ? 1 : 0.45;        // drawn poses already look somewhere: drift less
-      o.headX = gz.x * onRig; o.headY = gz.y * onRig; o.headZ = 1.5 * Math.sin(t * 0.62) + 0.7 * Math.sin(t * 0.37 + 1.3) - gz.x * 3 * onRig;
-      o.bodyZ = 0.9 * Math.sin(t * 0.62 - 0.7); o.bob = 0.8 * Math.sin(t * TAU / 3.4 + 0.5);
-      o.tail = 7 * Math.sin(t * 1.25) + 3 * Math.sin(t * 2.9 + 0.4);
-      o.handLy = -1.2 * o.breath; o.handRy = -1.2 * o.breath;
-      o.wind = 14 * Math.sin(t * 0.8) + 9 * Math.sin(t * 1.9 + 2);
-      if (this.blinkT < 0 && t > this.nextBlink) this.blinkT = 0;
-      let eye = 1;
-      if (this.blinkT >= 0) { this.blinkT += dt; const b = this.blinkT; eye = b < 0.07 ? 1 - ease.in(b / 0.07) : b < 0.11 ? 0 : b < 0.25 ? ease.out((b - 0.11) / 0.14) : 1; if (b >= 0.25) { this.blinkT = -1; if (!this.dbl && r() < 0.22) { this.dbl = true; this.nextBlink = t + 0.12; } else { this.dbl = false; this.nextBlink = t + 2.2 + r() * 3.8; } } }
-      o.eyeL = o.eyeR = eye;
-      const tw = this.twitch; if (tw.t < 0 && t > tw.next) { tw.t = 0; tw.side = r() < 0.5 ? 0 : 1; }
-      if (tw.t >= 0) { tw.t += dt; const a = track([[0, 0], [0.08, 1, 'out'], [0.18, -0.4, 'io'], [0.3, 0.5, 'io'], [0.5, 0, 'io']], tw.t) * 13; if (tw.side) o.earR = a; else o.earL = -a; if (tw.t > 0.5) { tw.t = -1; tw.next = t + 4 + r() * 7; } }
-
-      // ---------- walk: whole-body toddle, feet step, hands stay tucked
-      const wPrev = this.walkW, rate = this.walkTarget > this.walkW ? 2.6 : 3.2;
-      const canWalk = this.pose.cur === 'rig' && this.pose.u >= 1;
-      this.walkW = clamp(this.walkW + Math.sign((canWalk ? this.walkTarget : 0) - this.walkW) * rate * dt, 0, 1);
-      if (wPrev > 0 && this.walkW === 0) this.settle = 0;
-      const w = ease.io(this.walkW);
-      this.face += (this.dir * (this.walkTarget && canWalk ? 1 : 0) - this.face) * (1 - Math.exp(-dt * 6));
-      if (this.walkW > 0) {
-        this.phase += dt * 1.55 * (0.55 + 0.45 * w); const ph = this.phase * TAU, s = Math.sin(ph), c = Math.cos(ph);
-        const wk = {
-          legL: 23 * Math.pow(Math.max(0, s), 0.8), legR: 23 * Math.pow(Math.max(0, -s), 0.8), legLx: this.dir * 7 * c, legRx: -this.dir * 7 * c,
-          bob: 3 - 8.5 * Math.abs(s), bodyZ: 3.4 * Math.sin(ph - 0.5) + this.dir * 2.2, lean: this.dir * 7,
-          headZ: -2.2 * Math.sin(ph - 0.9) + this.dir * 1.5, headY: -0.05 + 0.05 * Math.abs(s),
-          handLy: -2.5 * Math.abs(s), handRy: -2.5 * Math.abs(Math.sin(ph + 0.5)),
-          tail: -this.dir * 10 + 9 * Math.sin(ph - 1.2), squash: 0.012 * Math.cos(ph * 2),
-        };
-        for (const k in wk) o[k] = lerp(o[k], wk[k], w);
-        this.vx = this.dir * 118 * w * (0.82 + 0.18 * Math.abs(s));
-      } else { this.vx = 0; this.phase = 0; }
-      o.headX = clamp(o.headX * (1 - Math.abs(this.face) * 0.8) + this.face * 0.86, -1, 1);
-      if (this.settle >= 0) { this.settle += dt; const q = this.settle; o.squash += track([[0, 0], [0.09, 0.03, 'out'], [0.24, -0.012, 'io'], [0.42, 0, 'io']], q); o.bob += track([[0, 0], [0.09, 3, 'out'], [0.3, 0, 'io']], q); if (q > 0.45) this.settle = -1; }
-
-      // ---------- action clip(s): parameters cross-fade, drawn poses follow the clip's timeline
-      const apply = (clip, ct, wt) => { if (!clip || wt <= 0) return; const v = clip.fn(ct); for (const k in v) { if (k === 'eyeMax') { const e = lerp(1, v[k], wt); o.eyeL = Math.min(o.eyeL, e); o.eyeR = Math.min(o.eyeR, e); } else o[k] = lerp(o[k], v[k], wt); } };
-      if (this.prev) { this.prevT += dt; this.prevW = Math.max(0, this.prevW - dt / 0.4); apply(this.prev, Math.min(this.prevT, this.prev.dur), ease.io(this.prevW)); if (this.prevW <= 0) this.prev = null; }
-      let want = this.pose.cur;
-      if (this.clip) {
-        this.clipT += dt; const c = this.clip; this.clipW = Math.min(sstep(0, 0.3, this.clipT), 1 - sstep(c.dur - 0.35, c.dur, this.clipT)); apply(c, this.clipT, this.clipW);
-        for (const k of c.poses) if (this.clipT >= k[0]) want = k[1];          // before the first key the current drawing stays
-        if (this.clipT >= c.dur) { this.clip = null; this.clipName = null; want = 'rig'; }
-      } else want = 'rig';
-      this.setPose(want, this.clip && this.clip.soft, this.clip && this.clip.cut);
-      const ps = this.pose; if (ps.u < 1) ps.u = Math.min(1, ps.u + dt / (this.poseDur || 0.13));
-      if (this.pop >= 0) { this.pop += dt; const q = this.pop; o.squash += (this.popAmp || 1) * track([[0, 0.03], [0.07, -0.028, 'out'], [0.2, 0.008, 'io'], [0.34, 0, 'io']], q); if (q > 0.36) this.pop = -1; }
-      pet.poseState = ps;
-      Object.assign(P, o);
-    }
+  // What only this character has: a tail, fin ears that twitch now and then, fists that ride on the breath.
+  function idle(o, c) {
+    const t = c.t, r = c.r;
+    o.tail = 7 * Math.sin(t * 1.25) + 3 * Math.sin(t * 2.9 + 0.4);
+    o.handLy = -1.2 * o.breath; o.handRy = -1.2 * o.breath;
+    const tw = c.state.twitch || (c.state.twitch = { t: -1, side: 0, next: 5 }); if (tw.t < 0 && t > tw.next) { tw.t = 0; tw.side = r() < 0.5 ? 0 : 1; }
+    if (tw.t >= 0) { tw.t += c.dt; const a = track([[0, 0], [0.08, 1, 'out'], [0.18, -0.4, 'io'], [0.3, 0.5, 'io'], [0.5, 0, 'io']], tw.t) * 13; if (tw.side) o.earR = a; else o.earL = -a; if (tw.t > 0.5) { tw.t = -1; tw.next = t + 4 + r() * 7; } }
   }
-  g.DeepSeekMotions = { CLIPS, Director };
+  function walk(c) {
+    return { handLy: -2.5 * Math.abs(c.s), handRy: -2.5 * Math.abs(Math.sin(c.ph + 0.5)), tail: -c.dir * 10 + 9 * Math.sin(c.ph - 1.2) };
+  }
+  g.DeepSeekMotions = { CLIPS, idle, walk };
 })(typeof window !== 'undefined' ? window : globalThis);
