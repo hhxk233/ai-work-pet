@@ -112,3 +112,17 @@ The order the user asked for: show the result, then GitHub, then the website, th
 - Drawn poses cannot blink; the eyes are part of the drawing.
 - Eyes do not follow the pointer.
 - It is a web page, not a Windows desktop program.
+
+## Lessons from the second character (GPT, 白龙娘, 2026-11-18 to 11-20)
+
+What worked better than on DeepSeek, and what was new. Files are under `characters/gpt/` and `tools/gpt/`.
+
+1. **Start from a drawing the user already approved and published.** Her front drawing is the upper-left chibi of her Live2D sheet, restored once on green by the image tool ("faithful clean-up, not a redesign"). One attempt, approved. Do not ask for a new design when one exists.
+2. **Layer plates are whole-figure edits, and they are never pixel-exact.** Ask for five plates (blank face, body only, back hair only, wings and tail only, closed-eye and closed-mouth parts). The tool redraws the whole figure each time, so do not cut a plate against the drawing pixel by pixel: use each plate whole for its own layer and take only the head from the approved drawing (`tools/gpt/cut_layers.py`). `check_plate.py` reports the shift; 0 to 2 px was normal.
+3. **Make the pose template from the model at rest, not from the drawing** (`tools/gpt/rest_composite.py`). Then the tool edits the template in place and every standing pose lands on the model within 1 px; no NUDGE table was needed. Ask for a pilot batch of four sheets first.
+4. **Figures that cannot be in-place edits** (sitting, lying, crouching, in the air) are marked `free` in `SHEETS`: the cutter puts the lowest point on the ground and lines the horn tips up with the template. Check the head with `head_shift.py` between poses of one action; the sitting laptop poses ended within 3 units.
+5. **Measure heads, do not eyeball them.** Ear-tip to ear-tip on the skin was 430 px on the template; two sleeping figures were 394 and 402 and looked "a bit small". Give the drawer the numbers when asking for a fix.
+6. **Bind a pose sprite almost rigidly when hair, wings and skirt fill the picture.** DeepSeek's region binding (sides to hair springs, hem to skirt springs, a band to the tail) bent hands, props and frills on her: the user called it jelly. Now a sprite rides the hips, the head nods it at under half weight, the soles stay planted and only the tail-tip curl has its own bones. Measure with `tools/gpt/strain.py` (optical flow between frames, stretch and shear only; rigid motion scores zero), not by eye alone: the worst place in a chewing hold went from 15 to 2. Fast small bobs (chewing, typing) shake springs: keep them small.
+7. **Long hair on the model must sway as one mass**: stiff, damped, every strand with the same spring and wind. Strands with different settings drift out of phase and read as jelly too. A wing is one rigid plate turning on its root.
+8. **Props with marks**: the image tool drew a company-like logo on the laptop and mug. Name the mark you want (her own knot flower) in the first request.
+9. **Opening a laptop** needed its own two-figure sheet (closed on the ground, lid part way up), drawn as an edit of the seated pose. It worked on the second attempt this time because the base was an in-place edit; on DeepSeek it failed twice.
