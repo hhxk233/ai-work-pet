@@ -1,6 +1,7 @@
-"""Original music-box loop for the demo video (synthesised here, no samples). 113 s, 44.1 kHz stereo."""
-import numpy as np, wave
-SR=44100; BPM=92; beat=60/BPM; DUR=113.0; N=int(SR*DUR); L=np.zeros(N); R=np.zeros(N)
+"""Original music-box loop for the demo videos (synthesised here, no samples). 44.1 kHz stereo.
+usage: python3 make_bgm.py [seconds]   (default 113, the DeepSeek demo; the two-pet demo uses 115) -> bgm.wav"""
+import numpy as np, wave, sys
+SR=44100; BPM=92; beat=60/BPM; DUR=float(sys.argv[1]) if len(sys.argv)>1 else 113.0; N=int(SR*DUR); L=np.zeros(N); R=np.zeros(N)
 def hz(m): return 440*2**((m-69)/12)
 def pluck(f,d,amp,bright=1.0):
     t=np.arange(int(SR*d))/SR; env=np.exp(-t*3.2)*(1-np.exp(-t*400))

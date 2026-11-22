@@ -1,0 +1,70 @@
+<!doctype html><meta charset="utf-8"><title>白龙娘 + 大肥鱼 demo capture</title>
+<!-- Capture page for the two-pet demo video (tools/capture.py --page=demo_duo.html). 1280x720, stepped frame by frame. -->
+<style>
+html,body{margin:0;background:#eef3fa;font-family:"Noto Sans CJK SC","PingFang SC","Microsoft YaHei",sans-serif;color:#22304f}
+#stage{position:relative;width:1280px;height:720px;overflow:hidden;background:linear-gradient(#f7f6ff,#e9edf9)}
+#ground{position:absolute;left:0;right:0;top:612px;height:108px;background:linear-gradient(#e3e6f6,#d6dcf0)}
+.sh{position:absolute;height:22px;border-radius:50%;background:radial-gradient(closest-side,rgba(50,50,110,.26),rgba(50,50,110,0))}
+canvas{position:absolute}
+#brand{position:absolute;left:56px;top:44px;font-size:20px;letter-spacing:.08em;color:#7a7fa8}
+#cap{position:absolute;left:56px;top:238px;width:430px}
+#cap h2{margin:0;font-size:52px;line-height:1.15;font-weight:700;letter-spacing:.01em}
+#cap p{margin:18px 0 0;font-size:23px;line-height:1.6;color:#5c6690}
+#cap .n{font-size:19px;color:#9096bd;letter-spacing:.14em;margin-bottom:14px}
+#title{position:absolute;left:56px;top:200px;width:460px}
+#title h1{margin:0;font-size:88px;line-height:1.08;font-weight:800}
+#title p{margin:22px 0 0;font-size:26px;color:#5c6690;line-height:1.6}
+#end{position:absolute;left:56px;top:170px;width:470px}
+#end h1{margin:0;font-size:50px;line-height:1.22;font-weight:800}
+#end p{margin:20px 0 0;font-size:23px;color:#5c6690;line-height:1.7}
+#end .u{margin-top:24px;font-size:24px;color:#22304f;font-weight:700}
+.tag{position:absolute;top:648px;font-size:17px;color:#7a7fa8;letter-spacing:.06em;transform:translateX(-50%)}
+</style>
+<div id="stage"><div id="ground"></div><div class="sh" id="shD"></div><div class="sh" id="shG"></div>
+<canvas id="cD" width="900" height="990"></canvas><canvas id="cG" width="900" height="990"></canvas>
+<div class="tag" id="tagG">白龙娘 · GPT</div><div class="tag" id="tagD">大肥鱼 · DeepSeek</div>
+<div id="brand">我与AI们 · AI 桌宠</div>
+<div id="title"><h1>白龙娘</h1><p>GPT 桌宠，大肥鱼的新伙伴<br>会陪你写代码，也会偷偷吃醋</p></div>
+<div id="cap"><div class="n"></div><h2></h2><p></p></div>
+<div id="end"><h1>网站上可以<br>切换桌宠了</h1><p>点一下会跳，拖一拖换位置，<br>右键或长按选动作。<br>下一位：Claude、Gemini、Grok。</p><div class="u">github.com/hhxk233/ai-work-pet</div></div>
+</div>
+<script src="engine/pet-engine.js"></script><script src="engine/director.js"></script>
+<script src="characters/deepseek/rig.js"></script><script src="characters/deepseek/motions.js"></script><script src="characters/deepseek/load.js"></script>
+<script src="characters/gpt/rig.js"></script><script src="characters/gpt/motions.js"></script><script src="characters/gpt/load.js"></script>
+<script>
+(async()=>{ const $=id=>document.getElementById(id);
+  const SC=0.8, CW=560*SC, CH=616*SC, S=CW/900, GROUND=636;                  // both pets at 80% of the single-pet demo
+  const D=await loadDeepSeek($('cD')), G=await loadGPT($('cG'));
+  const pets={ d:{ ...D, c:$('cD'), sh:$('shD'), tag:$('tagD'), x:1085-(500-60)*S }, g:{ ...G, c:$('cG'), sh:$('shG'), tag:$('tagG'), x:735-(500-50)*S } };   // x is the canvas' left edge; body axes at 735 and 1085
+  for (const k in pets) { const p=pets[k]; p.c.style.width=CW+'px'; p.c.style.height=CH+'px'; }
+  let T=0;
+  // caption track: [start, end, number, title, subtitle]
+  const CAPS=[[4.6,10.9,'01','待机','呼吸、眨眼，翅膀轻轻扇，尾巴尖卷一卷'],
+    [11.3,19.2,'02','走一走','长发和尾巴拖在身后，停下来再落回'],
+    [19.6,24.2,'03','打招呼','白龙娘挥挥手，大肥鱼也挥回来'],
+    [24.6,35.4,'04','吃小饼干','捧着看，咬一口，鼓着腮嚼；旁边在吃白米饭'],
+    [35.9,42.8,'05','吃醋','大肥鱼抱着小鲸鱼，她抱起胳膊：哼'],
+    [43.2,53.9,'06','白龙抱枕','她也有自己的抱枕，抱一抱，再趴一会儿'],
+    [54.4,69.6,'07','一起开工','坐下，掀开电脑，打字，托腮想一想'],
+    [70.0,78.0,'08','喝一口','捧着马克杯，小口小口地喝'],
+    [78.4,85.0,'09','想一想','托着下巴，想到了就竖起手指'],
+    [85.4,90.8,'10','伸懒腰','双手举高，翅膀张开，打个哈欠'],
+    [91.0,93.7,'11','点她一下','先蹲，再跳起来'],
+    [94.0,106.2,'12','晚安','披着小毯子打瞌睡，然后趴下睡着']];
+  const N=CAPS.length;
+  const win=(a,b,t,f)=>Math.max(0,Math.min(1,(t-a)/f))*Math.max(0,Math.min(1,(b-t)/f)), ez=u=>u*u*(3-2*u);
+  const place=p=>{ const vx=p===pets.d?60:50; p.c.style.left=p.x+'px'; p.c.style.top=(GROUND-(905+40)*S)+'px';
+    const k=1-p.pet.P.jump/90, w=170*SC*1.05*k*(p===pets.g?1.25:1), cx=p.x+(500-vx)*S;
+    p.sh.style.width=w+'px'; p.sh.style.left=(cx-w/2)+'px'; p.sh.style.top=(GROUND-11)+'px'; p.sh.style.opacity=k; p.tag.style.left=cx+'px'; };
+  const captions=()=>{ const ta=ez(win(0.4,4.2,T,0.5)); $('title').style.opacity=ta; $('title').style.transform=`translateY(${(1-ta)*14}px)`;
+    const ea=ez(win(106.8,114.6,T,0.6)); $('end').style.opacity=ea; $('end').style.transform=`translateY(${(1-ea)*14}px)`;
+    let a=0, cur=null; for(const k of CAPS){ const v=win(k[0],k[1],T,0.35); if(v>0){ a=ez(v); cur=k; } }
+    const el=$('cap'); el.style.opacity=a; el.style.transform=`translateY(${(1-a)*12}px)`;
+    if(cur){ el.querySelector('.n').textContent=cur[2]+' / '+N; el.querySelector('h2').textContent=cur[3]; el.querySelector('p').textContent=cur[4]; }
+    $('brand').style.opacity=ez(win(0.2,114.8,T,0.6)); const tg=ez(win(1.2,113.5,T,0.8)); $('tagG').style.opacity=tg*0.9; $('tagD').style.opacity=tg*0.9; };
+  window.cap={pets, step(dt){ T+=dt; for(const k in pets){ const p=pets[k]; p.director.update(p.pet,dt); p.pet.update(dt); p.x+=p.director.vx*S*dt; p.pet.draw(); place(p); } captions(); },
+    // commands: "g:play:cookie", "d:walk:-1", "g:halt"
+    cmd(s){ const [who,a,b]=s.split(':'); const d=pets[who].director; if(a==='walk')d.walk(+b); else if(a==='halt')d.halt(); else if(a==='play')d.play(b); } };
+  for(let i=0;i<30;i++) for(const k in pets){ const p=pets[k]; p.director.update(p.pet,1/30); p.pet.update(1/30); }
+  for(const k in pets){ pets[k].pet.draw(); place(pets[k]); } captions(); window.ready=true; })().catch(e=>{window.err=String(e.stack||e); document.title='ERR '+e.message});
+</script>
